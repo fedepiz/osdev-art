@@ -12,6 +12,7 @@
 
 #include <kernel/vga_terminal.h>
 #include <kernel/serial.h>
+#include <kernel/arch.h>
 
 extern "C" void kernel_main(void) {
 	/* Initialize terminal interface */
@@ -22,6 +23,8 @@ extern "C" void kernel_main(void) {
   /* Initializes serial com 1, used for debugging */
 	serial_init(SERIAL_COM1_BASE);
 	serial_writestring("Testing the beauty of the serial port\n");
+
+	arch_initialize();
 
 	terminal_writestring("Hanging...");
 }
