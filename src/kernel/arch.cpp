@@ -196,14 +196,6 @@ const char* exception_messages[] = {
     "Reserved"
 };
 
-/* This defines what the stack looks like after an ISR was running */
-struct regs {
-    unsigned int gs, fs, es, ds;      /* pushed the segs last */
-    unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;  /* pushed by 'pusha' */
-    unsigned int int_no, err_code;    /* our 'push byte #' and ecodes do this */
-    unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */ 
-};
-
 #include <kernel/vga_terminal.h>
 extern "C" void fault_handler(struct regs *r) {
     if(r->int_no < 32) {
@@ -211,8 +203,113 @@ extern "C" void fault_handler(struct regs *r) {
     }
 }
 
+extern "C" void irq0();
+extern "C" void irq1();
+extern "C" void irq2();
+extern "C" void irq3();
+extern "C" void irq4();
+extern "C" void irq5();
+extern "C" void irq6();
+extern "C" void irq7();
+extern "C" void irq8();
+extern "C" void irq9();
+extern "C" void irq10();
+extern "C" void irq11();
+extern "C" void irq12();
+extern "C" void irq13();
+extern "C" void irq14();
+extern "C" void irq15();
+
+typedef void (irq_handling_routine)(struct regs*);
+
+irq_handling_routine* irq_routines[16] = {
+    nullptr, nullptr, nullptr, nullptr, 
+    nullptr, nullptr, nullptr, nullptr, 
+    nullptr, nullptr, nullptr, nullptr, 
+    nullptr, nullptr, nullptr, nullptr
+};
+
+/* This installs a custom IRQ handler for the given IRQ */
+void irq_install_handler(int irq, void (*handler)(struct regs *r)){
+    irq_routines[irq] = handler;
+}
+
+void irq_unistall_handler(int irq) {
+    irq_routines[irq] = nullptr;
+}
+
+void irq_remap(void){
+    outb(0x20, 0x11);
+    outb(0xA0, 0x11);
+    outb(0x21, 0x20);
+    outb(0xA1, 0x28);
+    outb(0x21, 0x04);
+    outb(0xA1, 0x02);
+    outb(0x21, 0x01);
+    outb(0xA1, 0x01);
+    outb(0x21, 0x0);
+    outb(0xA1, 0x0);
+}
+
+/* Each of the IRQ ISRs point to this function, rather than
+*  the 'fault_handler' in 'isrs.c'. The IRQ Controllers need
+*  to be told when you are done servicing them, so you need
+*  to send them an "End of Interrupt" command (0x20). There
+*  are two 8259 chips: The first exists at 0x20, the second
+*  exists at 0xA0. If the second controller (an IRQ from 8 to
+*  15) gets an interrupt, you need to acknowledge the
+*  interrupt at BOTH controllers, otherwise, you only send
+*  an EOI command to the first controller. If you don't send
+*  an EOI, you won't raise any more IRQs */
+extern "C" void irq_handler(struct regs *r) {
+    /* This is a blank function pointer */
+    void (*handler)(struct regs *r);
+
+    /* Find out if we have a custom handler to run for this
+    *  IRQ, and then finally, run it */
+    handler = irq_routines[r->int_no - 32];
+    if (handler){
+        handler(r);
+    }
+
+    /* If the IDT entry that was invoked was greater than 40
+    *  (meaning IRQ8 - 15), then we need to send an EOI to
+    *  the slave controller */
+    if (r->int_no >= 40) {
+        outb(0xA0, 0x20);
+    }
+
+    /* In either case, we need to send an EOI to the master
+    *  interrupt controller too */
+    outb(0x20, 0x20);
+}
+		
+
+void irq_install() {
+    irq_remap();
+    idt_set_gate(32, (unsigned int)irq0, 0x08, 0x8E);
+    idt_set_gate(33, (unsigned int)irq1, 0x08, 0x8E);
+    idt_set_gate(34, (unsigned int)irq2, 0x08, 0x8E);
+    idt_set_gate(35, (unsigned int)irq3, 0x08, 0x8E);
+    idt_set_gate(36, (unsigned int)irq4, 0x08, 0x8E);
+    idt_set_gate(37, (unsigned int)irq5, 0x08, 0x8E);
+    idt_set_gate(38, (unsigned int)irq6, 0x08, 0x8E);
+    idt_set_gate(39, (unsigned int)irq7, 0x08, 0x8E);
+    idt_set_gate(40, (unsigned int)irq8, 0x08, 0x8E);
+    idt_set_gate(41, (unsigned int)irq9, 0x08, 0x8E);
+    idt_set_gate(42, (unsigned int)irq10, 0x08, 0x8E);
+    idt_set_gate(43, (unsigned int)irq11, 0x08, 0x8E);
+    idt_set_gate(44, (unsigned int)irq12, 0x08, 0x8E);
+    idt_set_gate(45, (unsigned int)irq13, 0x08, 0x8E);
+    idt_set_gate(46, (unsigned int)irq14, 0x08, 0x8E);
+    idt_set_gate(47, (unsigned int)irq15, 0x08, 0x8E);
+}
+
 void arch_initialize() {
   gdt_install();
   idt_install();
   isrs_install();
+  irq_install();
+  //Enable interrupts!
+  __asm__ __volatile__ ("sti");
 }

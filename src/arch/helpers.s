@@ -169,3 +169,75 @@ isr_common_stub:
     popa
 	  add esp, 8     ; Cleans up the pushed error code and pushed ISR number
 		iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP!
+
+;IRQ stuff
+global irq0
+global irq1
+global irq2
+global irq3
+global irq4
+global irq5
+global irq6
+global irq7
+global irq8
+global irq9
+global irq10
+global irq11
+global irq12
+global irq13
+global irq14
+global irq15
+
+;IRQS 0-15 are mapped into interrupts 32-47
+
+%macro irq_interrupt_handler 1
+irq%1:
+	cli
+	push byte 0
+	push byte (32 + %1)
+	jmp irq_common_stub
+%endmacro
+
+irq_interrupt_handler 0
+irq_interrupt_handler 1
+irq_interrupt_handler 2
+irq_interrupt_handler 3
+irq_interrupt_handler 4
+irq_interrupt_handler 5
+irq_interrupt_handler 6
+irq_interrupt_handler 7
+irq_interrupt_handler 8
+irq_interrupt_handler 9
+irq_interrupt_handler 10
+irq_interrupt_handler 11
+irq_interrupt_handler 12
+irq_interrupt_handler 13
+irq_interrupt_handler 14
+irq_interrupt_handler 15
+
+extern irq_handler
+; This is a stub that we have created for IRQ based ISRs. This calls
+; '_irq_handler' in our C code. We need to create this in an 'arch.cpp'
+irq_common_stub:
+    pusha
+    push ds
+    push es
+    push fs
+    push gs
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov eax, esp
+    push eax
+    mov eax, irq_handler
+    call eax
+    pop eax
+    pop gs
+    pop fs
+    pop es
+    pop ds
+    popa
+    add esp, 8
+    iret

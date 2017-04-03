@@ -14,6 +14,7 @@
 #include <kernel/serial.h>
 #include <kernel/arch.h>
 
+
 extern "C" void kernel_main(void) {
 	/* Initialize terminal interface */
 	terminal_initialize();
@@ -25,6 +26,8 @@ extern "C" void kernel_main(void) {
 	serial_writestring("Testing the beauty of the serial port\n");
 
 	arch_initialize();
-
 	terminal_writestring("Hanging...");
+	for(;;) {
+
+	}
 }
