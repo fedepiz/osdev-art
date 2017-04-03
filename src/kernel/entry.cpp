@@ -10,12 +10,18 @@
 #error "This tutorial needs to be compiled with a ix86-elf compiler"
 #endif
 
-#include "vga_terminal.h"
+#include <kernel/vga_terminal.h>
+#include <kernel/serial.h>
 
 extern "C" void kernel_main(void) {
 	/* Initialize terminal interface */
 	terminal_initialize();
 
-	/* Newline support is left as an exercise. */
-	terminal_writestring("Hello, kernel World!");
+	terminal_writestring("Hello, kernel World!\n");
+
+  /* Initializes serial com 1, used for debugging */
+	serial_init(SERIAL_COM1_BASE);
+	serial_writestring("Testing the beauty of the serial port\n");
+
+	terminal_writestring("Hanging...");
 }
