@@ -13,9 +13,16 @@
 #include <kernel/vga_terminal.h>
 #include <kernel/serial.h>
 #include <kernel/arch.h>
+#include <kernel/globals.h>
+#include <kernel/std.h>
 
 
 extern "C" void kernel_main(void) {
+	/* Initialize the global function dispatch selector */
+	struct globals globals;
+	globals.error_writestring = &terminal_writestring;
+	/* Complete global initialization */
+	globals_initialize(globals);
 	/* Initialize terminal interface */
 	terminal_initialize();
 
