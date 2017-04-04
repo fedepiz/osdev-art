@@ -124,6 +124,24 @@ void StaticHeap::free(void* genPtr) {
     tryMergeBlockWithSuccessor(header);
 }
 
+heapSize StaticHeap::getSize() {
+    heapSize size;
+    size.free = 0;
+    size.allocated = 0;
+    heapBlockHeader* header = this->headBlock;
+    while(header != nullptr) {
+        if(header->isFree){
+            size.free += header->size;
+        } else {
+            size.allocated += header->size;
+        }
+        header = header->nextBlock;
+    }
+    return size;
+}
+
+
+
 void StaticHeap::setStrict(bool state) {
     this->isStrict = state;
 }

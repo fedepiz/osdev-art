@@ -13,6 +13,11 @@ struct heapBlockHeader {
     bool isFree;
 };
 
+struct heapSize {
+    size_t free;
+    size_t allocated;
+};
+
 class StaticHeap {
     private:
     uint8_t* managedRegion;
@@ -24,6 +29,7 @@ class StaticHeap {
     StaticHeap(uint8_t* managedRegion, size_t regionSize);    
     void* malloc(size_t count);
     void free(void* ptr);
+    heapSize getSize();
     void debug();
     void setStrict(bool state);
 };

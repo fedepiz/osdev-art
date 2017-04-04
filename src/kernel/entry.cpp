@@ -61,7 +61,12 @@ void testStaticHeap() {
 	k_debug_writestring("This should be 52: ");
 	k_debug_writestring(itoa(array1[0]).str);
 	k_debug_writestring("\n");
-	k_debug_writestring("AFTER ALLOCATIONS\n");
+	heapSize heapSize = lclHeap.getSize();
+	k_debug_writestring("Free size: ");
+	k_debug_writestring(itoa(heapSize.free).str);
+	k_debug_writestring("\nAllocated size: ");
+	k_debug_writestring(itoa(heapSize.allocated).str);
+	k_debug_writestring("\nAFTER ALLOCATIONS\n");
 	lclHeap.debug();
 	lclHeap.free(array2);
 	k_debug_writestring("AFTER ONE FREE\n");
