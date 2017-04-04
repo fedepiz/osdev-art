@@ -4,10 +4,20 @@
 #include <util/StaticHeap.h>
 #include <driver/serial.h>
 #include <driver/vga_terminal.h>
+#include <driver/keyboard.h>
+#include <driver/pit.h>
 
 #define TEST_HEAP_SIZE (1024*2)
 uint8_t heap_buffer[TEST_HEAP_SIZE];
 StaticHeap* kernelHeap;
+
+#define PIT_FREQUENCY_HZ 100000
+
+void pit_test(uint32_t ticks) {
+	if(ticks % PIT_FREQUENCY_HZ == 0) {
+		terminal_writestring("Heart is beating...\n");
+	}
+}
 
 void initialize() {
 	/* Initialize the global function dispatch selector */
@@ -21,13 +31,17 @@ void initialize() {
 	k_heap_initialize();
 	/* Initialize terminal interface */
 	terminal_initialize();
-	terminal_writestring("Terminal initialized");
+	terminal_writestring("Terminal initialized\n");
 
   /* Initializes serial com 1, used for debugging */
 	serial_init(SERIAL_COM1_BASE);
 	serial_writestring("Testing the beauty of the serial port\n");
 	arch_initialize();
+
+	pit_initialize(PIT_FREQUENCY_HZ, &pit_test);
+	keyboard_initialize();
 }
+
 
 void hang() {
 	k_debug_writestring("Hanging...\n");

@@ -1,5 +1,5 @@
-#ifndef VGA_TERMINAL_H
-#define VGA_TERMINAL_H
+#ifndef DRIVER_VGA_TERMINAL_H
+#define DRIVER_VGA_TERMINAL_H
 #include <stddef.h>
 #include <stdint.h>
 /* Hardware text mode color constants. */

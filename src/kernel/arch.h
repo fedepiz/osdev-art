@@ -80,6 +80,8 @@ struct regs {
     unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */ 
 };
 
+#define PIT_IRQ_CODE 0
+#define KB_IRQ_CODE 1
 
 //Installs the handler for an irq
 void irq_install_handler(int irq, void (*handler)(struct regs *r));

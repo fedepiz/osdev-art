@@ -1,5 +1,5 @@
-#ifndef KERNEL_SERIAL_H
-#define KERNEL_SERIAL_H
+#ifndef DRIVER_SERIAL_H
+#define DRIVER_SERIAL_H
 #include <stdint.h>
 
     /* The I/O ports */
