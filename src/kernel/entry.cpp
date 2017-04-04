@@ -1,6 +1,7 @@
 #include <kernel/arch.h>
 #include <kernel/globals.h>
 #include <kernel/std.h>
+#include <kernel/paging.h>
 #include <util/StaticHeap.h>
 #include <driver/serial.h>
 #include <driver/vga_terminal.h>
@@ -28,7 +29,7 @@ void initialize() {
 	/* Complete global initialization */
 	globals_initialize(globals);
 	/* Initialize the kernel heap */
-	k_heap_initialize();
+	//k_heap_initialize();
 	/* Initialize terminal interface */
 	terminal_initialize();
 	terminal_writestring("Terminal initialized\n");
@@ -36,7 +37,9 @@ void initialize() {
   /* Initializes serial com 1, used for debugging */
 	serial_init(SERIAL_COM1_BASE);
 	serial_writestring("Testing the beauty of the serial port\n");
+	
 	arch_initialize();
+	paging_initialize();
 
 	pit_initialize(PIT_FREQUENCY_HZ, &pit_test);
 	keyboard_initialize();
@@ -81,7 +84,8 @@ void testStaticHeap() {
 
 extern "C" void kernel_main(void) {
 	initialize();
-	testStaticHeap();
+	paging_debug();
+	//testStaticHeap();
 	terminal_writestring("Hello, kernel World!\n");
 	hang();
 }
