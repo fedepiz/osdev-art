@@ -1,4 +1,3 @@
-#include <kernel/vga_terminal.h>
 #include <kernel/globals.h>
 #include <kernel/std.h>
 
@@ -96,6 +95,10 @@ void k_panic(const char* message) {
 
 void k_writestring(const char* message) {
     global_out_writestring(message);
+}
+
+void k_error_writestring(const char* message) {
+    global_error_writestring(message);
 }
 
 void k_debug_writestring(const char* message) {

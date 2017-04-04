@@ -1,4 +1,4 @@
-#include <kernel/vga_terminal.h>
+#include <driver/vga_terminal.h>
 #include <kernel/std.h>
 
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) {

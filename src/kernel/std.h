@@ -18,6 +18,7 @@ int itoa(int value, char *sp, int radix = 10);
 smallString itoa(int value, int radix = 10);
 void k_panic(const char* message);
 void k_writestring(const char* message);
+void k_error_writestring(const char* message);
 void k_debug_writestring(const char* message);
 
 

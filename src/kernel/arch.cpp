@@ -196,10 +196,9 @@ const char* exception_messages[] = {
     "Reserved"
 };
 
-#include <kernel/vga_terminal.h>
 extern "C" void fault_handler(struct regs *r) {
     if(r->int_no < 32) {
-        terminal_writestring("Exception!!");
+        k_error_writestring("Exception!!");
     }
 }
 
