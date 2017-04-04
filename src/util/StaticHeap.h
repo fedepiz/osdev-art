@@ -27,4 +27,7 @@ class StaticHeap {
     void debug();
     void setStrict(bool state);
 };
+
+extern StaticHeap* k_heap;
+void k_heap_initialize(void);
 #endif

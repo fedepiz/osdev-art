@@ -29,6 +29,8 @@ void initialize() {
 	globals.debug_writestring = &serial_writestring;
 	/* Complete global initialization */
 	globals_initialize(globals);
+	/* Initialize the kernel heap */
+	k_heap_initialize();
 	/* Initialize terminal interface */
 	terminal_initialize();
 	terminal_writestring("Terminal initialized");

@@ -131,3 +131,26 @@ void StaticHeap::setStrict(bool state) {
 void StaticHeap::debug() {
     debugBlockChain(this->headBlock);
 }
+
+//These are not functions really, just pieces of data,
+//but we use them as address markers.
+extern "C" void heap_top();
+extern "C" void heap_bottom();
+
+StaticHeap* k_heap;
+
+void k_heap_initialize() {
+    //Limits of the kernel heap region
+    uint8_t* heap_start = (uint8_t*)&heap_top;
+    uint8_t* heap_end = (uint8_t*)&heap_bottom;
+    //The managed region must start at heap_start + the size of the actual heap object
+    uint8_t* managedRegion = heap_start + sizeof(StaticHeap);
+    size_t managedRegionLength = heap_end - heap_start - sizeof(StaticHeap);
+    //Carpet the heap with 0s and check that the machine does not crash
+    k_memset(managedRegion, 0, managedRegionLength);
+    //Build a valid static heap instance
+    StaticHeap heap(managedRegion, managedRegionLength);
+    //Copy the heap from the stack into heap start
+    k_heap = (StaticHeap*)heap_start;
+    *k_heap = heap;
+}
