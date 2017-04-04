@@ -19,8 +19,11 @@
 
 #define SERIAL_LINE_ENABLE_DLAB          0x80
 
+#define SERIAL_DEFAULT_PORT SERIAL_COM1_BASE
+
 void serial_init(uint16_t port);
 void serial_write(uint16_t port, uint8_t a);
-void serial_writestring(const char* str, uint16_t port = SERIAL_COM1_BASE);
+void serial_writestring(const char* str);
+void serial_writestring(const char* str, uint16_t port);
 
 #endif

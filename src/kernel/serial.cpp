@@ -23,6 +23,10 @@ void serial_write(uint16_t port, uint8_t a) {
    outb(port,a);
 }
 
+void serial_writestring(const char* str) {
+  serial_writestring(str, SERIAL_DEFAULT_PORT);
+}
+
 void serial_writestring(const char* str, uint16_t port) {
   size_t len = k_strlen(str);
   for(size_t i = 0; i < len; i++) {

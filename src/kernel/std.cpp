@@ -1,5 +1,6 @@
 #include <kernel/vga_terminal.h>
 #include <kernel/globals.h>
+#include <kernel/std.h>
 
 size_t k_strlen(const char* str) {
 	size_t len = 0;
@@ -73,6 +74,13 @@ int itoa(int value, char *sp, int radix) {
     return len;
 }
 
+smallString itoa(int value, int radix) {
+    smallString str;
+    k_memset(str.str, 0, SMALL_STRING_SIZE);
+    itoa(value, str.str, radix);
+    return str;
+}
+
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 #define AT "\nat" __FILE__ ":" TOSTRING(__LINE__) "\n"
@@ -84,4 +92,12 @@ void k_panic(const char* message) {
 	for(;;) {
 		//Hang
 	}
+}
+
+void k_writestring(const char* message) {
+    global_out_writestring(message);
+}
+
+void k_debug_writestring(const char* message) {
+    global_debug_writestring(message);
 }
