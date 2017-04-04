@@ -6,7 +6,7 @@ SECTIONS {
       address space, which will be mapped to 1MB in the
       physical address space. */
    . = 0xC0100000;
-
+   kernel_start = .;
    .text : AT(ADDR(.text) - 0xC0000000) {
        *(.text)
        *(.rodata*)
@@ -22,4 +22,5 @@ SECTIONS {
        *(.bss)
        _ebss = .;
    }
+   kernel_end = .;
 }

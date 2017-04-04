@@ -12,6 +12,10 @@
 extern "C" void outb(uint16_t port, uint8_t data);
 extern "C" char inb(uint16_t port);
 
+/* Kernel start and end symbols - once again as functions but really just symbol placeholders */
+extern "C" void kernel_start();
+extern "C" void kernel_end();
+
 /* Defines a GDT entry. We say packed, because it prevents the
 *  compiler from doing things that it thinks is best: Prevent
 *  compiler "optimization" by packing */
