@@ -45,8 +45,16 @@ void page_in_kernel() {
     k_debug_writestring("\n");
     for(int i = 0; i < kernelBigPageSize; i++) {
         //Set R/W 4 MB page corresponding to the ith physical address
-        page_directory[kernelBasePage+i] = 0x00000083 | i << 12;
+        map_page(kernelBasePage+i, i);
     }
+}
+
+void map_page(int pageIndex, int frameIndex) {
+    page_directory[pageIndex] = 0x00000083 | frameIndex << 12;
+}
+
+void unmap_page(int pageIndex) {
+    page_directory[pageIndex] = 0x00000002;
 }
 
 void paging_initialize() {

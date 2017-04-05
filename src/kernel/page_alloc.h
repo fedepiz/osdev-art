@@ -1,0 +1,4 @@
+#ifndef KERNEL_PAGE_ALLOC_H
+#define KERNEL_PAGE_ALLOC_H
+
+#endif
