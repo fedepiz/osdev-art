@@ -89,6 +89,10 @@ namespace paging {
         }
         //Ask the frame allocator for a free frame
         int frame_index = allocate_frame();
+        //Fail if no frame is there...
+        if(frame_index == -1) {
+            return -1;
+        }
         //Mark the free page as taken
         this->pages_array[free_index] = true;
         //Map the page to the given frame
@@ -115,6 +119,9 @@ namespace paging {
 
     void page_allocator::free(int page) {
         int page_index = page - this->base_page;
+        if(page_index < 0 || (unsigned int)page_index >= this->pages_count) {
+            kstd::panic("Invalid page number");
+        }
         if(!this->pages_array[page_index]){
             kstd::panic("Attempting to free unused page");
         }

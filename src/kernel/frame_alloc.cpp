@@ -14,12 +14,14 @@ int first_free_frame() {
             return i;
         }
     }
-    kstd::panic("Out of frames!");
-    return 0;
+    return -1;
 }
 
 int allocate_frame() {
     int index = first_free_frame();
+    if(index == -1) {
+        return -1;
+    }
     frame_array[index] = true;
     return index;
 }
