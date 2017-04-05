@@ -72,11 +72,10 @@ void testDynamicHeap() {
 	paging::kernel_page_allocator.debug(true);
 	heap.debug();
 }*/
-
+#include <util/vector.h>
 extern "C" void kernel_main(void) {
 	initialize();
 	//testDynamicHeap();
-	
 	vga_term::puts("Hello, kernel World!\n");
 	hang();
 }
