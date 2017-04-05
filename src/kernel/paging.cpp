@@ -53,6 +53,14 @@ void map_page(int pageIndex, int frameIndex) {
     page_directory[pageIndex] = 0x00000083 | frameIndex << 12;
 }
 
+int frame_of_page(int pageIndex) {
+    return page_directory[pageIndex] >> 12;
+}
+
+bool page_is_mapped(int pageIndex) {
+    return page_directory[pageIndex] != 0x00000002 || page_directory[pageIndex] != 0;
+}
+
 void unmap_page(int pageIndex) {
     page_directory[pageIndex] = 0x00000002;
 }

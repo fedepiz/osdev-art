@@ -1,6 +1,8 @@
 #include <kernel/arch.h>
 #include <kernel/globals.h>
 #include <kernel/std.h>
+#include <kernel/frame_alloc.h>
+#include <kernel/page_alloc.h>
 #include <kernel/paging.h>
 #include <util/StaticHeap.h>
 #include <driver/serial.h>
@@ -39,6 +41,7 @@ void initialize() {
 	serial_writestring("Testing the beauty of the serial port\n");
 	
 	arch_initialize();
+	frame_alloc_initialize();
 	paging_initialize();
 
 	pit_initialize(PIT_FREQUENCY_HZ, &pit_test);

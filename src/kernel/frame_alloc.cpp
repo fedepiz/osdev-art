@@ -8,7 +8,7 @@
 //These are 4MB frames
 bool frame_array[NUM_FRAMES];
 
-int first_free() {
+int first_free_frame() {
     for(int i = 0; i < NUM_FRAMES;i++) {
         if(!frame_array[i]) {
             return i;
@@ -19,7 +19,7 @@ int first_free() {
 }
 
 int allocate_frame() {
-    int index = first_free();
+    int index = first_free_frame();
     frame_array[index] = true;
     return index;
 }
