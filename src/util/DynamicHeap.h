@@ -13,10 +13,12 @@ namespace util {
         heap_common::heapBlockHeader* last_header();
         bool grow_page();
         bool grow(size_t count);
+        heap_common::heapBlockHeader* _free(void* ptr);
         public:
         void initialize(paging::page_allocator* page_allocator);
         void* malloc(size_t count);
         void free(void* ptr);
+        void cfree(void* ptr);
         void debug();
     };
 

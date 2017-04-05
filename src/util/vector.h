@@ -2,7 +2,7 @@
 #define UTIL_VECTOR_H
 #include <kernel/kstd.h>
 #include <stddef.h>
-namespace kstd {
+namespace util {
     const size_t VECTOR_INIITAL_SIZE = 50;
 
     template <class T> class vector {
@@ -53,10 +53,10 @@ namespace kstd {
 
     template <class T> T& vector<T>::operator[] (int index) {
         if(index < 0) {
-            panic("Negative index in vector []");
+            kstd::panic("Negative index in vector []");
         }
         if((size_t)index >= this->item_count) {
-            panic("Vector indexed out of bounds");
+            kstd::panic("Vector indexed out of bounds");
         }
         return array[index];
     }
@@ -67,23 +67,23 @@ namespace kstd {
 
     template <class T> void vector<T>::erase(int index) {
         if(index < 0) {
-            panic("Negative index in vector::erase");
+            kstd::panic("Negative index in vector::erase");
         }
         if((size_t)index >= this->item_count) {
-            panic("Vector indexed out of bounds");
+            kstd::panic("Vector indexed out of bounds");
         }
         //Move all elements one closer
         for(size_t i = index+1; i < this->item_count;i++) {
             array[i - 1] = array[i];
         }
         //set last to zero
-        memset(&array[item_count-1],0,sizeof(T));
+        kstd::memset(&array[item_count-1],0,sizeof(T));
         //shrink
         this->item_count--;
     }
 
     template <class T> void vector<T>::clear() {
-        memset(this->array, 0, sizeof(T)*arr_size);
+        kstd::memset(this->array, 0, sizeof(T)*arr_size);
         this->item_count = 0;
     }
 };

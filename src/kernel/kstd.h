@@ -30,5 +30,6 @@ void memory_initialize();
 void* malloc(size_t count);
 void* calloc(size_t count);
 void free(void* ptr);
+void cfree(void* ptr);
 };
 #endif

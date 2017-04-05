@@ -1,3 +1,4 @@
 build/**
 isodir/boot/*.bin
 *.iso
+*.bxrc

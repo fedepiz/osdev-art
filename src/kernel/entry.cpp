@@ -17,9 +17,10 @@ using kstd::free;
 
 
 void pit_test(uint32_t ticks) {
-	if(ticks % pit::DEFAULT_FREQUENCY_HZ == 0) {
-		kstd::puts("Heart is beating...\n");
-	}
+	(void)ticks;
+	//if(ticks % pit::DEFAULT_FREQUENCY_HZ == 0) {
+	//	kstd::puts("Heart is beating...\n");
+	//}
 }
 
 void initialize() {
@@ -45,7 +46,6 @@ void initialize() {
 	paging::initialize();
 	kstd::memory_initialize();
 
-
 	pit::initialize(pit::DEFAULT_FREQUENCY_HZ, &pit_test);
 	keyboard::initialize();
 }
@@ -58,7 +58,23 @@ void hang() {
 	}
 }
 
-/*
+
+void testPageAllocator() {
+	paging::page_allocator* alloc = &paging::kernel_page_allocator;
+	alloc->debug(true);
+	uint8_t* ptr = (uint8_t*)paging::page_index_to_address(alloc->allocate());
+	vga_term::puts("Base address of page ");
+	vga_term::puts(itoa((uint32_t)ptr,16).str);
+	vga_term::puts("\n");
+	int* x = (int*)ptr;
+	int* y = (int*)ptr;
+	*x = 5;
+	vga_term::puts(itoa(*x).str);
+	vga_term::puts("\n");
+	vga_term::puts(itoa(*y).str);
+	vga_term::puts("\n");
+}
+
 void testDynamicHeap() {
 	util::DynamicHeap heap;
 	util::DynamicHeap_initialize(&heap, &paging::kernel_page_allocator);
@@ -71,11 +87,38 @@ void testDynamicHeap() {
 	heap.free(ptr[1]);
 	paging::kernel_page_allocator.debug(true);
 	heap.debug();
-}*/
+}
+
 #include <util/vector.h>
+
+void push_string(util::vector<char>& vec, const char* str) {
+	//While the string is not over
+	while(*str != '\0') {
+		vec.push_back(*str);
+		str++;
+	}
+}
+
+char* vector_as_string(util::vector<char>& vec) {
+	char* str = new char[vec.size()+1];
+	for(unsigned int i = 0; i < vec.size(); i++) {
+		str[i] = vec[i];
+	}
+	str[vec.size()] = '\0';
+	return str;
+}
+
 extern "C" void kernel_main(void) {
 	initialize();
+	//testPageAllocator();
 	//testDynamicHeap();
+	{
+		util::vector<char> vec;
+		push_string(vec, "Test\n");
+		char* str = vector_as_string(vec);
+		vga_term::puts(str);
+		delete str;
+	}
 	vga_term::puts("Hello, kernel World!\n");
 	hang();
 }

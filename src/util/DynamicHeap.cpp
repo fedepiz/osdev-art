@@ -88,10 +88,8 @@ namespace util {
             return allocate(fittingHeader, count);
         }
     }
-
-    //For now we have a restricted form of free: it will release the block and try to merge it,
-    //but it will not tell the OS the memory is out again.
-    void DynamicHeap::free(void* ptr) {
+    
+    heap_common::heapBlockHeader* DynamicHeap::_free(void* ptr) {
         heapBlockHeader* header = heap_common::blockAt(ptr);
         if(header == nullptr) {
             panic("Not a valid header block");
@@ -101,6 +99,18 @@ namespace util {
         }
         header->isFree = true;
         heap_common::tryMergeBlockWithSuccessor(header);
+        return header;
+    }
+
+    //For now we have a restricted form of free: it will release the block and try to merge it,
+    //but it will not tell the OS the memory is out again.
+    void DynamicHeap::free(void* ptr) {
+        this->_free(ptr);
+    }
+
+    void DynamicHeap::cfree(void* ptr) {
+        heapBlockHeader* header = this->_free(ptr);
+        kstd::memset(ptr, 0, header->size);
     }
 
     void DynamicHeap_initialize(DynamicHeap* heap, paging::page_allocator* allocator) {

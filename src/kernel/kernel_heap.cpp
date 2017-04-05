@@ -15,6 +15,10 @@ void free(void* ptr) {
     kernel_heap.free(ptr);
 }
 
+void cfree(void* ptr) {
+    kernel_heap.cfree(ptr);
+}
+
 void* calloc(size_t count) {
     void* ptr = kernel_heap.malloc(count);
     memset(ptr, 0, count);
