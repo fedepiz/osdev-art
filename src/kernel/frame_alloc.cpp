@@ -1,5 +1,5 @@
 #include <kernel/frame_alloc.h>
-#include <kernel/std.h>
+#include <kernel/kstd.h>
 #include <kernel/arch.h>
 
 #define FRAME_SIZE 0x400000
@@ -14,7 +14,7 @@ int first_free_frame() {
             return i;
         }
     }
-    k_panic("Out of frames!");
+    kstd::panic("Out of frames!");
     return 0;
 }
 
@@ -40,7 +40,7 @@ int available_frames() {
 
 void frame_alloc_initialize() {
     //Kernel is physically allocated at 0, reserve that amount of frames
-    int kernel_frame_count = (kernel_size()/FRAME_SIZE)+1;
+    int kernel_frame_count = (arch::kernel_size()/FRAME_SIZE)+1;
     for(int i = 0; i < NUM_FRAMES; i++) {
         if(i <= kernel_frame_count) {
             frame_array[i] = true;

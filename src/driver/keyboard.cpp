@@ -1,11 +1,15 @@
 #include <driver/keyboard.h>
 #include <kernel/arch.h>
 
+namespace keyboard {
+
+using arch::inb;
+
 volatile bool kb_block;
 unsigned char kb_last_press;
 bool kb_status[128];
 
-void keyboard_handler(struct regs *r) {
+void keyboard_handler(struct arch::regs *r) {
     (void)r;
     unsigned char scancode;
 
@@ -34,12 +38,12 @@ unsigned char get_key() {
     return kb_last_press;
 }
 
-void keyboard_initialize() {
+void initialize() {
     for(int i = 0; i < 128; i++) {
         kb_status[i] = false;
     }
     kb_block = false;
-    irq_install_handler(KB_IRQ_CODE, keyboard_handler);
+    arch::irq::install_handler(KB_IRQ_CODE, keyboard_handler);
 }
 
 /* KBDUS means US Keyboard Layout. This is a scancode table
@@ -89,3 +93,5 @@ unsigned char kbdus[128] = {
 char get_key_ascii() {
     return kbdus[get_key()];
 }
+
+};

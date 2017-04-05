@@ -1,8 +1,9 @@
 #include <util/StaticHeap.h>
-#include <kernel/std.h>
+#include <kernel/kstd.h>
 
 #define MIN_BLOCK_SIZE (sizeof(heapBlockHeader)*4)
-
+using kstd::log;
+using kstd::itoa;
 //Inserts a memory block, with the header starting at startAddress. Total size
 //is the total size of the memory block, INCLUDING THE HEADER
 heapBlockHeader* makeMemoryBlock(uint8_t* startAddress, size_t totalSize) {
@@ -59,22 +60,22 @@ bool tryMergeBlockWithSuccessor(heapBlockHeader* first) {
 }
 
 void debugBlock(heapBlockHeader* header) {
-    k_debug_writestring("Debugging header block\n");
+    log("Debugging header block\n");
     if(header == nullptr) {
-        k_debug_writestring("Null block address\n");
+        log("Null block address\n");
     }
     uint32_t address = (uint32_t)header;
-    k_debug_writestring("Header address:");
-    k_debug_writestring(itoa(address).str);
-    k_debug_writestring("\nMagic: ");
-    k_debug_writestring(itoa(header->magic).str);
-    k_debug_writestring("\nSize: ");
-    k_debug_writestring(itoa(header->size).str);
-    k_debug_writestring("\n");
+    log("Header address:");
+    log(itoa(address).str);
+    log("\nMagic: ");
+    log(itoa(header->magic).str);
+    log("\nSize: ");
+    log(itoa(header->size).str);
+    log("\n");
 }
 
 void debugBlockChain(heapBlockHeader* header) {
-    k_debug_writestring("Debugging heap block chain\n...\n");
+    log("Debugging heap block chain\n...\n");
     while(true) {
         debugBlock(header);
         header = header->nextBlock;
@@ -95,7 +96,7 @@ heapBlockHeader* StaticHeap::findFreeBlock() {
         ptr = ptr->nextBlock;
     }
     if(ptr == nullptr && this->isStrict) {
-        k_panic("Cannot find free block");
+        kstd::panic("Cannot find free block");
     }
     return ptr;
 }
@@ -106,7 +107,7 @@ void* StaticHeap::malloc(size_t count) {
         return nullptr;
     void* memPtr = allocate(freeBlock, count);
     if(memPtr == nullptr && this->isStrict) {
-        k_panic("Failed allocating block");
+        kstd::panic("Failed allocating block");
     }
     return memPtr;
 }
@@ -115,10 +116,10 @@ void StaticHeap::free(void* genPtr) {
     uint8_t* ptr = (uint8_t*) genPtr;
     heapBlockHeader* header = (heapBlockHeader*)(ptr - sizeof(heapBlockHeader));
     if(header->magic != HEAP_HEADER_MAGIC) {
-        k_panic("Magic number mismatch, not a valid heap block header");
+        kstd::panic("Magic number mismatch, not a valid heap block header");
     }
     if(header->isFree) {
-        k_panic("Attempting double free");
+        kstd::panic("Attempting double free");
     }
     header->isFree = true;
     tryMergeBlockWithSuccessor(header);
@@ -165,7 +166,7 @@ void k_heap_initialize() {
     uint8_t* managedRegion = heap_start + sizeof(StaticHeap);
     size_t managedRegionLength = heap_end - heap_start - sizeof(StaticHeap);
     //Carpet the heap with 0s and check that the machine does not crash
-    k_memset(managedRegion, 0, managedRegionLength);
+    kstd::memset(managedRegion, 0, managedRegionLength);
     //Build a valid static heap instance
     StaticHeap heap(managedRegion, managedRegionLength);
     //Copy the heap from the stack into heap start

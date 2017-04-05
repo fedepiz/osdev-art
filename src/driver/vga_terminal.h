@@ -2,6 +2,8 @@
 #define DRIVER_VGA_TERMINAL_H
 #include <stddef.h>
 #include <stdint.h>
+
+namespace vga_term {
 /* Hardware text mode color constants. */
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
@@ -22,8 +24,9 @@ enum vga_color {
 	VGA_COLOR_WHITE = 15,
 };
 
-void terminal_initialize(void);
-void terminal_setcolor(uint8_t color);
-void terminal_putchar(char c);
-void terminal_writestring(const char* data);
+void initialize(void);
+void setcolor(uint8_t color);
+void putchar(char c);
+void puts(const char* data);
+};
 #endif

@@ -1,7 +1,9 @@
 #include <driver/vga_terminal.h>
-#include <kernel/std.h>
+#include <kernel/kstd.h>
+#include <kernel/arch.h>
 
-#define TERMINAL_BUFFER_BASE_ADDRESS 0xC00B8000
+namespace vga_term {
+const uint32_t TERMINAL_BUFFER_BASE_ADDRESS = 0x000B8000;
 
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) {
 	return fg | bg << 4;
@@ -20,11 +22,11 @@ size_t terminal_column;
 uint8_t terminal_color;
 uint16_t* terminal_buffer;
 
-void terminal_initialize(void) {
+void initialize(void) {
 	terminal_row = 0;
 	terminal_column = 0;
 	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	terminal_buffer = (uint16_t*) TERMINAL_BUFFER_BASE_ADDRESS;
+	terminal_buffer = (uint16_t*) (TERMINAL_BUFFER_BASE_ADDRESS + arch::KERNEL_VIRTUAL_BASE);
 	for (size_t y = 0; y < VGA_HEIGHT; y++) {
 		for (size_t x = 0; x < VGA_WIDTH; x++) {
 			const size_t index = y * VGA_WIDTH + x;
@@ -55,7 +57,7 @@ void advance_column() {
   }
 }
 
-void terminal_putchar(char c) {
+void putchar(char c) {
   if(c == '\n') {
     terminal_column = 0;
     advance_row();
@@ -65,11 +67,12 @@ void terminal_putchar(char c) {
   }
 }
 
-void terminal_write(const char* data, size_t size) {
+void write(const char* data, size_t size) {
 	for (size_t i = 0; i < size; i++)
-		terminal_putchar(data[i]);
+		putchar(data[i]);
 }
 
-void terminal_writestring(const char* data) {
-	terminal_write(data, k_strlen(data));
+void puts(const char* data) {
+	write(data, kstd::strlen(data));
 }
+};

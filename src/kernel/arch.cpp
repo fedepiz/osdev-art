@@ -1,6 +1,6 @@
 #include <kernel/arch.h>
-#include <kernel/std.h>
-
+#include <kernel/kstd.h>
+namespace arch {
 size_t kernel_size() {
     uint32_t kernelStart = (uint32_t)&kernel_start;
     uint32_t kernelEnd = (uint32_t)&kernel_end;
@@ -82,7 +82,7 @@ void idt_install()
     idtp.base = (unsigned int)&idt;
 
     /* Clear out the entire IDT, initializing it to zeros */
-    k_memset(&idt, 0, sizeof(struct idt_entry) * 256);
+    kstd::memset(&idt, 0, sizeof(struct idt_entry) * 256);
 
     /* Add any new ISRs to the IDT here using idt_set_gate */
 
@@ -90,6 +90,7 @@ void idt_install()
     idt_load();
 }
 
+namespace isr {
 
 extern "C" void isr0();
 extern "C" void isr1();
@@ -124,6 +125,7 @@ extern "C" void isr29();
 extern "C" void isr30();
 extern "C" void isr31();
 
+
 /*Installs the isrs
  * We set the first 32 entries
  *  in the IDT to the first 32 ISRs. We can't use a for loop
@@ -133,7 +135,7 @@ extern "C" void isr31();
  *  running in ring 0 (kernel level), and has the lower 5 bits
  *  set to the required '14', which is represented by 'E' in
  *  hex. */
-void isrs_install(){
+void install(){
     idt_set_gate(0, (unsigned)isr0, 0x08, 0x8E);
     idt_set_gate(1, (unsigned)isr1, 0x08, 0x8E);
     idt_set_gate(2, (unsigned)isr2, 0x08, 0x8E);
@@ -204,10 +206,13 @@ const char* exception_messages[] = {
 
 extern "C" void fault_handler(struct regs *r) {
     if(r->int_no < 32) {
-        k_error_writestring("Exception!!");
+        kstd::puterr("Exception!!");
     }
 }
 
+};
+
+namespace irq {
 extern "C" void irq0();
 extern "C" void irq1();
 extern "C" void irq2();
@@ -235,15 +240,15 @@ irq_handling_routine* irq_routines[16] = {
 };
 
 /* This installs a custom IRQ handler for the given IRQ */
-void irq_install_handler(int irq, void (*handler)(struct regs *r)){
+void install_handler(int irq, void (*handler)(struct regs *r)){
     irq_routines[irq] = handler;
 }
 
-void irq_unistall_handler(int irq) {
+void unistall_handler(int irq) {
     irq_routines[irq] = nullptr;
 }
 
-void irq_remap(void){
+void remap(void){
     outb(0x20, 0x11);
     outb(0xA0, 0x11);
     outb(0x21, 0x20);
@@ -290,8 +295,8 @@ extern "C" void irq_handler(struct regs *r) {
 }
 		
 
-void irq_install() {
-    irq_remap();
+void install() {
+    remap();
     idt_set_gate(32, (unsigned int)irq0, 0x08, 0x8E);
     idt_set_gate(33, (unsigned int)irq1, 0x08, 0x8E);
     idt_set_gate(34, (unsigned int)irq2, 0x08, 0x8E);
@@ -309,12 +314,13 @@ void irq_install() {
     idt_set_gate(46, (unsigned int)irq14, 0x08, 0x8E);
     idt_set_gate(47, (unsigned int)irq15, 0x08, 0x8E);
 }
-
-void arch_initialize() {
+};
+void initialize() {
   gdt_install();
   idt_install();
-  isrs_install();
-  irq_install();
+  isr::install();
+  irq::install();
   //Enable interrupts!
   __asm__ __volatile__ ("sti");
 }
+};

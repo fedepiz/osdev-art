@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
+namespace arch {
     /** outb:
      *  Sends the given data to the given I/O port. Defined in io.s
      *
@@ -14,7 +15,7 @@ extern "C" void outb(uint16_t port, uint8_t data);
 extern "C" char inb(uint16_t port);
 
 /* Kernel start and end symbols - once again as functions but really just symbol placeholders */
-#define KERNEL_VIRTUAL_BASE 0xC0000000
+const uint32_t KERNEL_VIRTUAL_BASE = 0xC0000000;
 extern "C" void kernel_start();
 extern "C" void kernel_end();
 size_t kernel_size();
@@ -41,8 +42,8 @@ struct gdt_ptr
 } __attribute__((packed));
 
 /* Our GDT, with 3 entries, and finally our special GDT pointer */
-extern struct gdt_entry gdt[3];
-extern struct gdt_ptr gp;
+extern "C" struct gdt_entry gdt[3];
+extern "C" struct gdt_ptr gp;
 
 /* This will be a function in start.asm. We use this to properly
 *  reload the new segment registers */
@@ -71,8 +72,8 @@ struct idt_ptr
 *  will cause an "Unhandled Interrupt" exception. Any descriptor
 *  for which the 'presence' bit is cleared (0) will generate an
 *  "Unhandled Interrupt" exception */
-extern struct idt_entry idt[256];
-extern struct idt_ptr idtp;
+extern "C" struct idt_entry idt[256];
+extern "C" struct idt_ptr idtp;
 
 /* This exists in 'start.asm', and is used to load our IDT */
 extern "C" void idt_load();
@@ -87,12 +88,16 @@ struct regs {
     unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */ 
 };
 
+namespace irq {
+
 #define PIT_IRQ_CODE 0
 #define KB_IRQ_CODE 1
 
 //Installs the handler for an irq
-void irq_install_handler(int irq, void (*handler)(struct regs *r));
-void irq_unistall_handler(int irq);
-
-void arch_initialize();
+void install_handler(int irq, void (*handler)(struct regs *r));
+void unistall_handler(int irq);
+void remap();
+};
+void initialize();
+};
 #endif

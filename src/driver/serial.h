@@ -9,6 +9,8 @@
      * order, but they start at different values.
      */
 
+namespace serial {
+
 #define SERIAL_COM1_BASE                0x3F8      /* COM1 base port */
 
 #define SERIAL_DATA_PORT(base)          (base)
@@ -21,9 +23,9 @@
 
 #define SERIAL_DEFAULT_PORT SERIAL_COM1_BASE
 
-void serial_init(uint16_t port);
-void serial_write(uint16_t port, uint8_t a);
-void serial_writestring(const char* str);
-void serial_writestring(const char* str, uint16_t port);
-
+void initialize(uint16_t port);
+void put(uint16_t port, uint8_t a);
+void puts(const char* str);
+void puts(const char* str, uint16_t port);
+};
 #endif

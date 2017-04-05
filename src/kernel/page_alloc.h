@@ -10,5 +10,7 @@ struct page_allocator {
     public:
     int allocate();
     void free(int page);
+    private:
+    int first_free();
 };
 #endif

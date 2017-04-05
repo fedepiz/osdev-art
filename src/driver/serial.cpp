@@ -1,8 +1,10 @@
 #include <driver/serial.h>
 #include <kernel/arch.h>
-#include <kernel/std.h>
-
-void serial_init(uint16_t port)
+#include <kernel/kstd.h>
+namespace serial {
+using arch::outb;
+using arch::inb;
+void initialize(uint16_t port)
 {
   outb(port + 1, 0x00);    // Disable all interrupts
   outb(port + 3, 0x80);    // Enable DLAB (set baud rate divisor)
@@ -17,19 +19,20 @@ int is_transmit_empty(uint16_t port) {
    return inb(port + 5) & 0x20;
 }
 
-void serial_write(uint16_t port, uint8_t a) {
+void put(uint16_t port, uint8_t a) {
    while (is_transmit_empty(port) == 0);
 
    outb(port,a);
 }
 
-void serial_writestring(const char* str) {
-  serial_writestring(str, SERIAL_DEFAULT_PORT);
+void puts(const char* str) {
+  puts(str, SERIAL_DEFAULT_PORT);
 }
 
-void serial_writestring(const char* str, uint16_t port) {
-  size_t len = k_strlen(str);
+void puts(const char* str, uint16_t port) {
+  size_t len = kstd::strlen(str);
   for(size_t i = 0; i < len; i++) {
-    serial_write(port, str[i]);
+    put(port, str[i]);
   }
 }
+};

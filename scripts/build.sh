@@ -13,7 +13,7 @@ i686-elf-g++ -c src/kernel/arch.cpp -o build/kernel/arch.o $CFLAGS
 i686-elf-g++ -c src/kernel/entry.cpp -o build/kernel/entry.o $CFLAGS
 i686-elf-g++ -c src/kernel/globals.cpp -o build/kernel/globals.o $CFLAGS
 i686-elf-g++ -c src/kernel/paging.cpp -o build/kernel/paging.o $CFLAGS
-i686-elf-g++ -c src/kernel/std.cpp -o build/kernel/std.o $CFLAGS
+i686-elf-g++ -c src/kernel/kstd.cpp -o build/kernel/kstd.o $CFLAGS
 i686-elf-g++ -c src/kernel/frame_alloc.cpp -o build/kernel/frame_alloc.o $CFLAGS
 i686-elf-g++ -c src/kernel/page_alloc.cpp -o build/kernel/page_alloc.o $CFLAGS
 

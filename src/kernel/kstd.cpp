@@ -1,21 +1,23 @@
 #include <kernel/globals.h>
-#include <kernel/std.h>
+#include <kernel/kstd.h>
 
-size_t k_strlen(const char* str) {
+namespace kstd {
+
+size_t strlen(const char* str) {
 	size_t len = 0;
 	while (str[len])
 		len++;
 	return len;
 }
 
-void k_memset(void* ptr, uint8_t val, size_t size) {
+void memset(void* ptr, uint8_t val, size_t size) {
 	uint8_t* data = (uint8_t*)ptr;
 	for(size_t i = 0; i < size; i++) {
 		data[i] = val;
 	}
 }
 
-void k_memcpy(void* destination, const void* source, size_t num) {
+void memcpy(void* destination, const void* source, size_t num) {
 	uint8_t* dest = (uint8_t*)destination;
 	const uint8_t* src = (const uint8_t*)source;
 	for(size_t i = 0; i < num; i++) {
@@ -75,7 +77,7 @@ int itoa(int value, char *sp, int radix) {
 
 smallString itoa(int value, int radix) {
     smallString str;
-    k_memset(str.str, 0, SMALL_STRING_SIZE);
+    memset(str.str, 0, SMALL_STRING_SIZE);
     itoa(value, str.str, radix);
     return str;
 }
@@ -84,23 +86,24 @@ smallString itoa(int value, int radix) {
 #define TOSTRING(x) STRINGIFY(x)
 #define AT "\nat" __FILE__ ":" TOSTRING(__LINE__) "\n"
 
-void k_panic(const char* message) {
-	global_error_writestring("PANIC: ");
-	global_error_writestring(message);
-	global_error_writestring(AT);
+void panic(const char* message) {
+	puterr("PANIC: ");
+	puterr(message);
+	puterr(AT);
 	for(;;) {
 		//Hang
 	}
 }
 
-void k_writestring(const char* message) {
+void puts(const char* message) {
     global_out_writestring(message);
 }
 
-void k_error_writestring(const char* message) {
+void puterr(const char* message) {
     global_error_writestring(message);
 }
 
-void k_debug_writestring(const char* message) {
+void log(const char* message) {
     global_debug_writestring(message);
 }
+};
