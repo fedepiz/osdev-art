@@ -1,1 +1,1 @@
-qemu-system-i386 -cdrom osdev-art.iso
+qemu-system-i386 -sdl -cdrom osdev-art.iso -serial stdio
