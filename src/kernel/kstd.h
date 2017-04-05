@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <util/DynamicHeap.h>
 
 namespace kstd {
 
@@ -22,5 +23,12 @@ void panic(const char* message);
 void puts(const char* message);
 void puterr(const char* message);
 void log(const char* message);
+
+
+extern util::DynamicHeap kernel_heap;
+void memory_initialize();
+void* malloc(size_t count);
+void* calloc(size_t count);
+void free(void* ptr);
 };
 #endif

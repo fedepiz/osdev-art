@@ -7,9 +7,9 @@ namespace util {
     using heap_common::heapBlockHeader;
     using heap_common::heapSize;
     using heap_common::makeMemoryBlock;
-    using heap_common::findBlock;
     using heap_common::tryMergeBlockWithSuccessor;
     using heap_common::debugBlockChain;
+    using heap_common::blockAt;
 
     using kstd::log;
     using kstd::panic;
@@ -73,7 +73,7 @@ namespace util {
 
     void* DynamicHeap::malloc(size_t count) {
         //See if there is a large enough block
-        heapBlockHeader* fittingHeader = findBlock(this->head_block, count);
+        heapBlockHeader* fittingHeader = heap_common::findFreeBlock(this->head_block, count);
         if(fittingHeader != nullptr) {
             //The block is large enough, proceed with allocation
             return allocate(fittingHeader, count);
@@ -84,12 +84,30 @@ namespace util {
             return nullptr;
         } else {
             //We succeded, retry allocation
-            fittingHeader = findBlock(this->head_block, count);
+            fittingHeader = heap_common::findFreeBlock(this->head_block, count);
             return allocate(fittingHeader, count);
         }
     }
 
+    //For now we have a restricted form of free: it will release the block and try to merge it,
+    //but it will not tell the OS the memory is out again.
+    void DynamicHeap::free(void* ptr) {
+        heapBlockHeader* header = heap_common::blockAt(ptr);
+        if(header == nullptr) {
+            panic("Not a valid header block");
+        }
+        if(header->isFree) {
+            panic("Attempting to free an unallocated block");
+        }
+        header->isFree = true;
+        heap_common::tryMergeBlockWithSuccessor(header);
+    }
+
     void DynamicHeap_initialize(DynamicHeap* heap, paging::page_allocator* allocator) {
         heap->initialize(allocator);
+    }
+
+    void DynamicHeap::debug() {
+        debugBlockChain(this->head_block);
     }
 };

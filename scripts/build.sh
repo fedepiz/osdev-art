@@ -14,6 +14,7 @@ i686-elf-g++ -c src/kernel/entry.cpp -o build/kernel/entry.o $CFLAGS
 i686-elf-g++ -c src/kernel/globals.cpp -o build/kernel/globals.o $CFLAGS
 i686-elf-g++ -c src/kernel/paging.cpp -o build/kernel/paging.o $CFLAGS
 i686-elf-g++ -c src/kernel/kstd.cpp -o build/kernel/kstd.o $CFLAGS
+i686-elf-g++ -c src/kernel/kernel_heap.cpp -o build/kernel/kernel_heap.o $CFLAGS
 i686-elf-g++ -c src/kernel/frame_alloc.cpp -o build/kernel/frame_alloc.o $CFLAGS
 
 i686-elf-g++ -c src/driver/vga_terminal.cpp -o build/driver/vga_terminal.o $CFLAGS

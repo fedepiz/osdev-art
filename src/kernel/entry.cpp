@@ -12,6 +12,8 @@
 
 using kstd::log;
 using kstd::itoa;
+using kstd::malloc;
+using kstd::free;
 
 
 void pit_test(uint32_t ticks) {
@@ -41,6 +43,8 @@ void initialize() {
 	arch::initialize();
 	frame_alloc_initialize();
 	paging::initialize();
+	kstd::memory_initialize();
+
 
 	pit::initialize(pit::DEFAULT_FREQUENCY_HZ, &pit_test);
 	keyboard::initialize();
@@ -54,17 +58,25 @@ void hang() {
 	}
 }
 
+/*
 void testDynamicHeap() {
 	util::DynamicHeap heap;
 	util::DynamicHeap_initialize(&heap, &paging::kernel_page_allocator);
 
+	int* ptr[4];
+	for(int i = 0; i < 4; i++) {
+		ptr[i] = (int*)heap.malloc(63);
+	}
+	heap.free(ptr[2]);
+	heap.free(ptr[1]);
 	paging::kernel_page_allocator.debug(true);
-}
-
+	heap.debug();
+}*/
 
 extern "C" void kernel_main(void) {
 	initialize();
-	testDynamicHeap();
+	//testDynamicHeap();
+	
 	vga_term::puts("Hello, kernel World!\n");
 	hang();
 }

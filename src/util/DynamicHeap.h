@@ -17,6 +17,7 @@ namespace util {
         void initialize(paging::page_allocator* page_allocator);
         void* malloc(size_t count);
         void free(void* ptr);
+        void debug();
     };
 
     void DynamicHeap_initialize(DynamicHeap* heap, paging::page_allocator* page_allocator);

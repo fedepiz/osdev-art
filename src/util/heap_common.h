@@ -20,7 +20,8 @@ struct heapSize {
 };
 
 heapBlockHeader* makeMemoryBlock(uint8_t* startAddress, size_t totalSize);
-heapBlockHeader* findBlock(heapBlockHeader* head, size_t minSize);
+heapBlockHeader* findFreeBlock(heapBlockHeader* head, size_t minSize);
+heapBlockHeader* blockAt(void* genPtr);
 uint8_t* allocate(heapBlockHeader* master, size_t splitSize);
 bool tryMergeBlockWithSuccessor(heapBlockHeader* first);
 void debugBlock(heapBlockHeader* header);

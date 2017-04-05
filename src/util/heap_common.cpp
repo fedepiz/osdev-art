@@ -4,6 +4,9 @@
 namespace util {
     namespace heap_common {
 #define MIN_BLOCK_SIZE (sizeof(heapBlockHeader)*4)
+//Use 32-bit alignment for blocks
+const int alignment = 4;
+
 using kstd::log;
 using kstd::itoa;
 //Inserts a memory block, with the header starting at startAddress. Total size
@@ -18,9 +21,9 @@ heapBlockHeader* makeMemoryBlock(uint8_t* startAddress, size_t totalSize) {
     return header;
 }
 
-heapBlockHeader* findBlock(heapBlockHeader* head, size_t minSize) {
+heapBlockHeader* findFreeBlock(heapBlockHeader* head, size_t minSize) {
     while(head != nullptr) {
-        if(head->size >= minSize) {
+        if(head->isFree && head->size >= minSize) {
             return head;
         }
         head = head->nextBlock;
@@ -29,14 +32,25 @@ heapBlockHeader* findBlock(heapBlockHeader* head, size_t minSize) {
     return nullptr;
 }
 
+heapBlockHeader* blockAt(void* genPtr) {
+    uint8_t* ptr = (uint8_t*)genPtr;
+    heapBlockHeader* header = (heapBlockHeader*)(ptr - sizeof(heapBlockHeader));
+    if(header->magic != HEAP_HEADER_MAGIC) {
+        return nullptr;//kstd::panic("Magic number mismatch, not a valid heap block header");
+    }
+    return header;
+}
+
 //Allocates a block of memory, splitting it off a current existing block
 uint8_t* allocate(heapBlockHeader* master, size_t splitSize) {
+    //Make split-size aligned on a 32-bit bounduary
+    if(splitSize % alignment != 0) splitSize += alignment - (splitSize % alignment);
     if(master->size < splitSize) {
         //Not enough memory in block
         return nullptr;
     }
     if(master->size < MIN_BLOCK_SIZE) {
-        //The block is already of minimal size, simply mark as alocated and
+        //The block is already of minimal size, simply mark as allocated and
         //return the pointer to the memory
         master->isFree = false;
         uint8_t* basePtr = (uint8_t*)master;
@@ -79,12 +93,16 @@ void debugBlock(heapBlockHeader* header) {
     }
     uint32_t address = (uint32_t)header;
     log("Header address:");
-    log(itoa(address).str);
+    log(itoa(address,16).str);
     log("\nMagic: ");
     log(itoa(header->magic).str);
     log("\nSize: ");
     log(itoa(header->size).str);
-    log("\n");
+    log("\nFree: ");
+    if(header->isFree)
+        log("Y\n");
+    else
+        log("N\n");
 }
 
 void debugBlockChain(heapBlockHeader* header) {
