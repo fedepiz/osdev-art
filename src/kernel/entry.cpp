@@ -2,7 +2,6 @@
 #include <kernel/globals.h>
 #include <kernel/kstd.h>
 #include <kernel/frame_alloc.h>
-#include <kernel/page_alloc.h>
 #include <kernel/paging.h>
 #include <util/StaticHeap.h>
 #include <driver/serial.h>

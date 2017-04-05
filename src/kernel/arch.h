@@ -15,9 +15,9 @@ extern "C" void outb(uint16_t port, uint8_t data);
 extern "C" char inb(uint16_t port);
 
 /* Kernel start and end symbols - once again as functions but really just symbol placeholders */
-const uint32_t KERNEL_VIRTUAL_BASE = 0xC0000000;
 extern "C" void kernel_start();
 extern "C" void kernel_end();
+const uint32_t KERNEL_VIRTUAL_BASE = 0xC0000000;
 size_t kernel_size();
 
 /* Defines a GDT entry. We say packed, because it prevents the
