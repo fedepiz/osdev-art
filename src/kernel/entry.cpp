@@ -4,14 +4,11 @@
 #include <kernel/frame_alloc.h>
 #include <kernel/paging.h>
 #include <util/StaticHeap.h>
+#include <util/DynamicHeap.h>
 #include <driver/serial.h>
 #include <driver/vga_terminal.h>
 #include <driver/keyboard.h>
 #include <driver/pit.h>
-
-#define TEST_HEAP_SIZE (1024*2)
-uint8_t heap_buffer[TEST_HEAP_SIZE];
-StaticHeap* kernelHeap;
 
 using kstd::log;
 using kstd::itoa;
@@ -57,39 +54,17 @@ void hang() {
 	}
 }
 
-void testStaticHeap() {
-	log("Testing static heap\n");
-	StaticHeap lclHeap(heap_buffer, TEST_HEAP_SIZE);
-	lclHeap.setStrict(true);
-	log("INITIAL HEAP STATE\n");
-	lclHeap.debug();
-	auto* array1 = (uint32_t*)lclHeap.malloc(sizeof(uint32_t)*4);
-	auto* array2 = (uint32_t*)lclHeap.malloc(sizeof(uint32_t)*4);
-	array1[0] = 52;
-	array2[0] = 24;
-	log("This should be 52: ");
-	log(itoa(array1[0]).str);
-	log("\n");
-	heapSize heapSize = lclHeap.getSize();
-	log("Free size: ");
-	log(itoa(heapSize.free).str);
-	log("\nAllocated size: ");
-	log(itoa(heapSize.allocated).str);
-	log("\nAFTER ALLOCATIONS\n");
-	lclHeap.debug();
-	lclHeap.free(array2);
-	log("AFTER ONE FREE\n");
-	lclHeap.debug();
-	lclHeap.free(array1);
-	log("AFTER TWO FREES\n");
-	lclHeap.debug();
+void testDynamicHeap() {
+	util::DynamicHeap heap;
+	util::DynamicHeap_initialize(&heap, &paging::kernel_page_allocator);
+
+	paging::kernel_page_allocator.debug(true);
 }
 
 
 extern "C" void kernel_main(void) {
 	initialize();
-	paging::debug();
-	//testStaticHeap();
+	testDynamicHeap();
 	vga_term::puts("Hello, kernel World!\n");
 	hang();
 }

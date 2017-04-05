@@ -73,7 +73,7 @@ namespace paging {
     
     int page_allocator::first_free() {
         for(size_t i = 0; i < this->pages_count; i++) {
-            if(!this->pages_array[i]) {
+            if(this->pages_array[i] == page_state::free) {
                 return i;
             }
         }
@@ -94,7 +94,7 @@ namespace paging {
             return -1;
         }
         //Mark the free page as taken
-        this->pages_array[free_index] = true;
+        this->pages_array[free_index] = page_state::allocated;
         //Map the page to the given frame
         int page = free_index + this->base_page;
         map_page(page, frame_index);
@@ -106,9 +106,9 @@ namespace paging {
         //If the index is valid
         if(page_index < this->pages_count) {
             //And the page is free...
-            if(!this->pages_array[page_index]) {
+            if(this->pages_array[page_index] == page_state::free) {
                 //Reserve
-                this->pages_array[page_index] = true;
+                this->pages_array[page_index] = page_state::reserved;
             } else {
                 kstd::panic("Cannot reserve page - page is not free");
             }
@@ -161,10 +161,12 @@ namespace paging {
         log(")");
         log(" -> ");
         log(kstd::itoa(page_addr,16).str);
-        if(this->pages_array[index]) {
+        if(this->pages_array[index] == page_state::allocated) {
             log(" ALLOC\n");
-        } else {
+        } else if(this->pages_array[index] == page_state::free) {
             log(" FREE\n");
+        } else {
+            log(" RESERVED\n");
         }
     }
 
@@ -178,7 +180,7 @@ namespace paging {
     }
 
     page_allocator kernel_page_allocator;
-    bool kernel_page_allocator_pages_array[1024];
+    page_state kernel_page_allocator_pages_array[1024];
 
 
     void kernel_allocator_initialize() {

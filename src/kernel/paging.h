@@ -1,11 +1,16 @@
 #ifndef KERNEL_PAGING_H
 #define KERNEL_PAGING_H
 #include <stddef.h>
+#include <stdint.h>
 
 extern "C" void BootPageDirectory();//Dummy extern symbol, not a real function
 
 namespace paging {
     const size_t BIG_PAGE_SIZE = 0x400000;
+
+
+    enum page_state { free, reserved, allocated };
+
 
     int address_to_page_index(void* addr);
     void* page_index_to_address(int page);
@@ -21,7 +26,7 @@ namespace paging {
 
     struct page_allocator {
     public:
-        bool* pages_array;
+        page_state* pages_array;
         size_t pages_count;
         int base_page;
         char name[16];
