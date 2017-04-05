@@ -1,6 +1,12 @@
 #include <kernel/arch.h>
 #include <kernel/std.h>
 
+size_t kernel_size() {
+    uint32_t kernelStart = (uint32_t)&kernel_start;
+    uint32_t kernelEnd = (uint32_t)&kernel_end;
+    return kernelEnd - kernelStart;
+}
+
 struct gdt_entry gdt[3];
 struct gdt_ptr gp;
 
