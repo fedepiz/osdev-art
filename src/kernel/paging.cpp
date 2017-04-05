@@ -56,11 +56,11 @@ namespace paging {
     }
 
     void map_page(int pageIndex, int frameIndex) {
-        page_directory[pageIndex] = 0x00000083 | frameIndex << 12;
+        page_directory[pageIndex] = 0x00000083 | frameIndex << 22;
     }
 
     int frame_of_page(int pageIndex) {
-        return page_directory[pageIndex] >> 12;
+        return page_directory[pageIndex] >> 22;
     }
 
     bool page_is_mapped(int pageIndex) {
