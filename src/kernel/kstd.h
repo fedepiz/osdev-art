@@ -25,7 +25,7 @@ void log(const char* message);
 
 
 extern util::DynamicHeap kernel_heap;
-void memory_initialize();
+void kernel_heap_initialize();
 void* malloc(size_t count);
 void* calloc(size_t count);
 void free(void* ptr);

@@ -4,7 +4,7 @@
 namespace kstd {
 util::DynamicHeap kernel_heap;
 
-void memory_initialize() {
+void kernel_heap_initialize() {
     util::DynamicHeap_initialize(&kernel_heap, &paging::kernel_page_allocator);
 }
 

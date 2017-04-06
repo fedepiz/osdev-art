@@ -3,6 +3,7 @@
 #include <kernel/kstd.h>
 #include <kernel/frame_alloc.h>
 #include <kernel/paging.h>
+#include <kernel/multiboot.h>
 #include <util/StaticHeap.h>
 #include <util/DynamicHeap.h>
 #include <driver/serial.h>
@@ -23,7 +24,7 @@ void pit_test(uint32_t ticks) {
 	//}
 }
 
-void initialize() {
+void initialize(uint32_t ebx) {
 	/* Initialize the global function dispatch selector */
 	struct globals globals;
 	globals.error_writestring = &vga_term::puts;
@@ -35,17 +36,28 @@ void initialize() {
 	//k_heap_initialize();
 	/* Initialize terminal interface */
 	vga_term::initialize();
-	vga_term::puts("Terminal initialized\n");
+	//vga_term::puts("Terminal initialized\n");
 
   /* Initializes serial com 1, used for debugging */
 	serial::initialize(SERIAL_COM1_BASE);
-	serial::puts("Testing the beauty of the serial port\n");
-	
-	arch::initialize();
-	frame_alloc_initialize();
-	paging::initialize();
-	kstd::memory_initialize();
+	//serial::puts("Testing the beauty of the serial port\n");
 
+	//Load the multiboot header
+	auto mbinfo = (multiboot::multiboot_info_t*)(ebx + arch::KERNEL_VIRTUAL_BASE);
+
+	//Initialize the basic architecture parts (gdt, idt, interrupts, etc etc)
+	arch::initialize();
+	//Initialize the kernel frame allocator
+	frame_alloc::initialize(arch::kernel_size());
+	//Reserve the memory of the multiboot modules
+	//(must happen before we initialize the kernel heap and start dishing out frames)
+	multiboot::reserve_modules_frames(mbinfo);
+	//Initialize the paging system and kernel page allocator
+	paging::initialize();
+	//Create the kernel heap
+	kstd::kernel_heap_initialize();
+
+	//Core device drivers
 	pit::initialize(pit::DEFAULT_FREQUENCY_HZ, &pit_test);
 	keyboard::initialize();
 }
@@ -91,21 +103,11 @@ void testDynamicHeap() {
 
 #include <util/vector.h>
 #include <util/text.h>
-#include <kernel/multiboot.h>
-
-typedef int (*mod_call_t)(void);
 
 extern "C" void kernel_main(uint32_t ebx) {
-	initialize();
+	initialize(ebx);
 	//testPageAllocator();
 	//testDynamicHeap();
-
-	//ebx contains physical address of multiboot_info_t, recover it
-	multiboot::multiboot_info_t *mbinfo = (multiboot::multiboot_info_t*)(ebx + arch::KERNEL_VIRTUAL_BASE);
-	mod_call_t f = (mod_call_t)multiboot::load_module(mbinfo, nullptr);
-
-	int x = f();
-	util::logf("Program result is %d\n", x);
 
 	util::printf("Welcome to Art v0.01a\n");
 	util::printf("\"Beauty lies in the eye of the beholder\"\n");

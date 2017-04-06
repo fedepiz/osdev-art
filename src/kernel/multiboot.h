@@ -121,5 +121,6 @@ typedef struct memory_mapvoid
 
 #endif /* ! ASM */
 void* load_module(multiboot_info_t* mbinfo, size_t *length);
+void reserve_modules_frames(multiboot_info_t* mbinfo);
 };
 #endif

@@ -88,7 +88,7 @@ namespace paging {
             return -1;
         }
         //Ask the frame allocator for a free frame
-        int frame_index = allocate_frame();
+        int frame_index = frame_alloc::allocate();
         //Fail if no frame is there...
         if(frame_index == -1) {
             return -1;
@@ -127,7 +127,7 @@ namespace paging {
         }
         //Get the index of the frame currently mapped to this page
         int frame_index = paging::frame_of_page(page);
-        free_frame(frame_index);
+        frame_alloc::free(frame_index);
         //Unmap the page
         unmap_page(page);
     }
