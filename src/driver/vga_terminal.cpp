@@ -1,5 +1,5 @@
 #include <driver/vga_terminal.h>
-#include <kernel/kstd.h>
+#include <kstdlib.h>
 #include <kernel/arch.h>
 
 namespace vga_term {

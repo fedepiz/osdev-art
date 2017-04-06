@@ -1,6 +1,7 @@
 #include <util/text.h>
 #include <util/vector.h>
-#include <kernel/kstd.h>
+#include <kstdio.h>
+#include <kstdlib.h>
 #include <stdarg.h>
 
 namespace util {

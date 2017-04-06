@@ -1,5 +1,6 @@
 #include <kernel/arch.h>
-#include <kernel/kstd.h>
+#include <kstdio.h>
+#include <kstdlib.h>
 namespace arch {
 size_t kernel_size() {
     uint32_t kernelStart = (uint32_t)&kernel_start;

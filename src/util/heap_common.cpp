@@ -1,5 +1,7 @@
 #include <util/heap_common.h>
-#include <kernel/kstd.h>
+#include <kstdio.h>
+#include <kstdlib.h>
+
 
 namespace util {
     namespace heap_common {

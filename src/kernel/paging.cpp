@@ -1,6 +1,7 @@
 #include <kernel/paging.h>
 #include <kernel/arch.h>
-#include <kernel/kstd.h>
+#include <kstdio.h>
+#include <kstdlib.h>
 #include <kernel/frame_alloc.h>
 
 namespace paging {

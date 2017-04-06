@@ -1,5 +1,5 @@
 #include <util/StaticHeap.h>
-#include <kernel/kstd.h>
+#include <kstdio.h>
 
 namespace util {
 using kstd::log;

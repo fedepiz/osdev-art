@@ -1,6 +1,6 @@
 #include <driver/serial.h>
 #include <kernel/arch.h>
-#include <kernel/kstd.h>
+#include <kstdlib.h>
 namespace serial {
 using arch::outb;
 using arch::inb;

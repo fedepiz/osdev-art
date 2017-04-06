@@ -1,5 +1,6 @@
+#include <kstdio.h>
+#include <kstdlib.h>
 #include <kernel/frame_alloc.h>
-#include <kernel/kstd.h>
 #include <kernel/paging.h>
 
 namespace frame_alloc {

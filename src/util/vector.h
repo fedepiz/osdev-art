@@ -1,6 +1,7 @@
 #ifndef UTIL_VECTOR_H
 #define UTIL_VECTOR_H
-#include <kernel/kstd.h>
+#include <kstdio.h>
+#include <kstdlib.h>
 #include <stddef.h>
 namespace util {
     const size_t VECTOR_INIITAL_SIZE = 50;

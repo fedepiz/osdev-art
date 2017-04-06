@@ -1,6 +1,7 @@
+#include <kstdio.h>
+#include <kstdlib.h>
 #include <kernel/arch.h>
 #include <kernel/globals.h>
-#include <kernel/kstd.h>
 #include <kernel/frame_alloc.h>
 #include <kernel/paging.h>
 #include <kernel/multiboot.h>

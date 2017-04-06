@@ -1,8 +1,7 @@
-#include <kernel/globals.h>
-#include <kernel/kstd.h>
+#include <kstdlib.h>
+#include <util/DynamicHeap.h>
 
 namespace kstd {
-
 size_t strlen(const char* str) {
 	size_t len = 0;
 	while (str[len])
@@ -83,24 +82,44 @@ smallString itoa(int value, int radix) {
 }
 
 
-void puts(const char* message) {
-    global_out_writestring(message);
+util::DynamicHeap kernel_heap;
+
+void kernel_heap_initialize() {
+    util::DynamicHeap_initialize(&kernel_heap, &paging::kernel_page_allocator);
 }
 
-void puterr(const char* message) {
-    global_error_writestring(message);
+void* malloc(size_t count) {
+    return kernel_heap.malloc(count);
+}
+void free(void* ptr) {
+    kernel_heap.free(ptr);
 }
 
-void log(const char* message) {
-    global_debug_writestring(message);
+void cfree(void* ptr) {
+    kernel_heap.cfree(ptr);
+}
+
+void* calloc(size_t count) {
+    void* ptr = kernel_heap.malloc(count);
+    memset(ptr, 0, count);
+    return ptr;
 }
 };
 
-void _panic(const char* message, const char* pos) {
-    kstd::puterr("PANIC: ");
-	kstd::puterr(message);
-    kstd::puterr(pos);
-	for(;;) {
-		//Hang
-	}
+
+void *operator new(size_t size) {
+    return kstd::calloc(size);
 }
+ 
+void *operator new[](size_t size) {
+    return kstd::calloc(size);
+}
+ 
+void operator delete(void *p) {
+    kstd::free(p);
+}
+ 
+void operator delete[](void *p) {
+    kstd::free(p);
+}
+
