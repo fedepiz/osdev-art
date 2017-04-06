@@ -108,12 +108,26 @@ void testDynamicHeap() {
 	heap.debug();
 }
 
+void print_rainbow(const char* ptr) {
+	uint8_t color = 1;
+	while(*ptr != '\0') {
+		uint8_t actualColor = color;
+		if(color == vga_term::vga_color::VGA_COLOR_BLUE) actualColor = 15;
+		vga_term::setcolor(actualColor);
+		vga_term::putchar(*ptr);
+		color++;
+		if(color > 6) color = 1;
+		ptr++;
+	}
+	vga_term::setcolor(vga_term::vga_color::VGA_COLOR_WHITE);
+}
+
 extern "C" void kernel_main(uint32_t ebx) {
 	initialize(ebx);
 	//testPageAllocator();
 	//testDynamicHeap();
 
 	util::printf("Welcome to Art v0.01a\n");
-	util::printf("\"Beauty lies in the eye of the beholder\"\n");
+	print_rainbow("\"Beauty lies in the eye of the beholder\"\n");
 	hang();
 }
