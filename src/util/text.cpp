@@ -2,11 +2,13 @@
 #include <util/vector.h>
 #include <kstdio.h>
 #include <kstdlib.h>
+#include <util/vector.h>
 #include <stdarg.h>
 
 namespace util {
+    using util::vector;
 
-    void push_string(util::vector<char>& vec, const char* str) {
+    void push_string(vector<char>& vec, const char* str) {
         //While the string is not over
         while(*str != '\0') {
             vec.push_back(*str);
@@ -14,7 +16,7 @@ namespace util {
         }
     }
 
-    char* vector_as_string(util::vector<char>& vec) {
+    char* vector_as_string(vector<char>& vec) {
         char* str = new char[vec.size()+1];
         for(unsigned int i = 0; i < vec.size(); i++) {
             str[i] = vec[i];

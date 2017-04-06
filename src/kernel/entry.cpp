@@ -11,7 +11,9 @@
 #include <driver/vga_terminal.h>
 #include <driver/keyboard.h>
 #include <driver/pit.h>
-
+#include <filesystem/VFS.h>
+#include <util/vector.h>
+#include <util/text.h>
 using kstd::log;
 using kstd::itoa;
 using kstd::malloc;
@@ -61,6 +63,9 @@ void initialize(uint32_t ebx) {
 	//Core device drivers
 	pit::initialize(pit::DEFAULT_FREQUENCY_HZ, &pit_test);
 	keyboard::initialize();
+
+	vfs::initialize();
+	util::logf("%s\n", vfs::root->getName());
 }
 
 
@@ -101,9 +106,6 @@ void testDynamicHeap() {
 	paging::kernel_page_allocator.debug(true);
 	heap.debug();
 }
-
-#include <util/vector.h>
-#include <util/text.h>
 
 extern "C" void kernel_main(uint32_t ebx) {
 	initialize(ebx);

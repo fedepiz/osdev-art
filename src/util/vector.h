@@ -1,5 +1,5 @@
-#ifndef UTIL_VECTOR_H
-#define UTIL_VECTOR_H
+#ifndef KSTD_VECTOR_H
+#define KSTD_VECTOR_H
 #include <kstdio.h>
 #include <kstdlib.h>
 #include <stddef.h>

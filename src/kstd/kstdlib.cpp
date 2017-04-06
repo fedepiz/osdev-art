@@ -9,6 +9,18 @@ size_t strlen(const char* str) {
 	return len;
 }
 
+int strcmp(char* str1, char* str2) {
+    while(*str1 != '\0') {
+        char diff = *str1 - *str2;
+        if(diff != 0) {
+            return diff;
+        }
+        str1++;
+        str2++;
+    }
+    return *str2 == '\0';
+}
+
 void memset(void* ptr, uint8_t val, size_t size) {
 	uint8_t* data = (uint8_t*)ptr;
 	for(size_t i = 0; i < size; i++) {
@@ -105,21 +117,3 @@ void* calloc(size_t count) {
     return ptr;
 }
 };
-
-
-void *operator new(size_t size) {
-    return kstd::calloc(size);
-}
- 
-void *operator new[](size_t size) {
-    return kstd::calloc(size);
-}
- 
-void operator delete(void *p) {
-    kstd::free(p);
-}
- 
-void operator delete[](void *p) {
-    kstd::free(p);
-}
-

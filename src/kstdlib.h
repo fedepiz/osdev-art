@@ -18,6 +18,8 @@ int itoa(int value, char *sp, int radix = 10);
 smallString itoa(int value, int radix = 10);
 
 size_t strlen(const char* str);
+int strcmp(char* str1, char* str2);
+
 void memset(void* ptr, uint8_t val, size_t size);
 void memcpy(void* destination, const void* source, size_t num);
 
