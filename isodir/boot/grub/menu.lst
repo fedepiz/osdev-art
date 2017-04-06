@@ -6,3 +6,4 @@ default 0
 
 title Art
 kernel /boot/kernel.bin    # Edit it to the filename of your kernel.
+module /modules/program

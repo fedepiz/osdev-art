@@ -91,11 +91,22 @@ void testDynamicHeap() {
 
 #include <util/vector.h>
 #include <util/text.h>
+#include <kernel/multiboot.h>
 
-extern "C" void kernel_main(void) {
+typedef int (*mod_call_t)(void);
+
+extern "C" void kernel_main(uint32_t ebx) {
 	initialize();
 	//testPageAllocator();
 	//testDynamicHeap();
+
+	//ebx contains physical address of multiboot_info_t, recover it
+	multiboot::multiboot_info_t *mbinfo = (multiboot::multiboot_info_t*)(ebx + arch::KERNEL_VIRTUAL_BASE);
+	mod_call_t f = (mod_call_t)multiboot::load_module(mbinfo, nullptr);
+
+	int x = f();
+	util::logf("Program result is %d\n", x);
+
 	util::printf("Welcome to Art v0.01a\n");
 	util::printf("\"Beauty lies in the eye of the beholder\"\n");
 	hang();
