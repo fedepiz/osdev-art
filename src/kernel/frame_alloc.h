@@ -4,7 +4,7 @@
 #include <stddef.h>
 namespace frame_alloc {
     enum frame_state {
-        FREE, ALLOCATED, RESERVED
+        FREE, ALLOCATED, RESERVED, UNAVAILABLE
     };
     int address_to_frame_index(void* addr);
     void* frame_index_to_address(int frame);
@@ -14,7 +14,7 @@ namespace frame_alloc {
     void reserve(int frame);
     void free(int frame);
     int available();
-    void initialize(uint32_t upperAddress);
+    void initialize(uint32_t kernel_upper_address);
     void debug(bool verbose);
 };
 #endif

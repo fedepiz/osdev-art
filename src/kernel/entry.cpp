@@ -51,21 +51,22 @@ void initialize(uint32_t ebx) {
 	//Initialize the basic architecture parts (gdt, idt, interrupts, etc etc)
 	arch::initialize();
 	//Initialize the kernel frame allocator
+	uint32_t mem_size = mbinfo->mem_upper;
 	frame_alloc::initialize(arch::kernel_size());
 	//Reserve the memory of the multiboot modules
 	//(must happen before we initialize the kernel heap and start dishing out frames)
 	multiboot::reserve_modules_frames(mbinfo);
+	//let's now get the maximum mem-higher size
 	//Initialize the paging system and kernel page allocator
 	paging::initialize();
 	//Create the kernel heap
 	kstd::kernel_heap_initialize();
-
 	//Core device drivers
 	pit::initialize(pit::DEFAULT_FREQUENCY_HZ, &pit_test);
 	keyboard::initialize();
 
 	vfs::initialize();
-	util::logf("%s\n", vfs::root->getName());
+	//util::logf("%s\n", vfs::root->getName());
 }
 
 
