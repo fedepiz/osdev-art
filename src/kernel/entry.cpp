@@ -90,35 +90,13 @@ void testDynamicHeap() {
 }
 
 #include <util/vector.h>
-
-void push_string(util::vector<char>& vec, const char* str) {
-	//While the string is not over
-	while(*str != '\0') {
-		vec.push_back(*str);
-		str++;
-	}
-}
-
-char* vector_as_string(util::vector<char>& vec) {
-	char* str = new char[vec.size()+1];
-	for(unsigned int i = 0; i < vec.size(); i++) {
-		str[i] = vec[i];
-	}
-	str[vec.size()] = '\0';
-	return str;
-}
+#include <util/text.h>
 
 extern "C" void kernel_main(void) {
 	initialize();
 	//testPageAllocator();
 	//testDynamicHeap();
-	{
-		util::vector<char> vec;
-		push_string(vec, "Test\n");
-		char* str = vector_as_string(vec);
-		vga_term::puts(str);
-		delete str;
-	}
-	vga_term::puts("Hello, kernel World!\n");
+	util::printf("Welcome to Art v0.01a\n");
+	util::printf("\"Beauty lies in the eye of the beholder\"\n");
 	hang();
 }
