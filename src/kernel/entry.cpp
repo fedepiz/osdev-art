@@ -19,6 +19,8 @@ using kstd::itoa;
 using kstd::malloc;
 using kstd::free;
 
+using util::logf;
+
 
 void pit_test(uint32_t ticks) {
 	(void)ticks;
@@ -123,11 +125,31 @@ void print_rainbow(const char* ptr) {
 	vga_term::setcolor(vga_term::vga_color::VGA_COLOR_WHITE);
 }
 
+
+/*
+	#include <util/ring.h>
+	ring test code
+	util::ring<int> ring(5);
+	ring.push_back(1);
+	ring.push_back(2);
+	ring.push_back(3);
+	logf("%d %d %d\n", ring[0], ring[1], ring[2]);
+	ring.pop_front();
+	logf("%d %d\n", ring[0], ring[1]);
+	ring.pop_back();
+	logf("%d %d\n", ring.count(), ring.available());
+	ring.push_back(0);
+	ring.push_back(0);
+	ring.push_back(0);
+	ring.push_back(0);
+	logf("%d %d\n", ring.count(), ring.available());
+	ring.push_back(0);
+*/
+
 extern "C" void kernel_main(uint32_t ebx) {
 	initialize(ebx);
 	//testPageAllocator();
 	//testDynamicHeap();
-
 	util::printf("Welcome to Art v0.01a\n");
 	print_rainbow("\"Beauty lies in the eye of the beholder\"\n");
 	hang();

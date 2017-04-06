@@ -18,6 +18,10 @@ namespace kstd {
         this->buffer = new char[this->length+1];
         kstd::memcpy(this->buffer, other.buffer, this->length+1);
     }
+
+    string::~string() {
+        delete this->buffer;
+    }
     string& string::operator=(const string& other) {
         this->length = other.length;
         this->buffer = new char[this->length+1];

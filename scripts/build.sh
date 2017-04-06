@@ -5,6 +5,7 @@ mkdir -p build/driver
 mkdir -p build/util
 mkdir -p build/filesystem
 mkdir -p build/kstd
+mkdir -p build/kterm
 
 export CFLAGS="-std=c++11 -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Isrc"
 
@@ -35,6 +36,10 @@ i686-elf-g++ -c src/util/DynamicHeap.cpp -o build/util/DynamicHeap.o $CFLAGS
 i686-elf-g++ -c src/util/text.cpp -o build/util/text.o $CFLAGS
 
 i686-elf-g++ -c src/filesystem/VFS.cpp -o build/filesystem/VFS.o $CFLAGS
+
+i686-elf-g++ -c src/kterm/Shell.cpp -o build/kterm/Shell.o $CFLAGS
+i686-elf-g++ -c src/kterm/Terminal.cpp -o build/kterm/Terminal.o $CFLAGS
+
 
 i686-elf-ld -T src/linker.ld -o build/kernel.bin build/**/*.o
 #i686-elf-ld -T src/linker.ld -o build/kernel.bin build/arch/*.o build/kernel/*.o build/driver/*.o build/util/*.o build/filesystem/*.o build/kstd/*.o

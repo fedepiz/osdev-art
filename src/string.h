@@ -10,6 +10,7 @@ namespace kstd {
         string();
         string(const char* str);
         string(const string& other);
+        ~string();
         string& operator=(const string& other);
         unsigned int size() const;
         char operator[](unsigned int index) const;
