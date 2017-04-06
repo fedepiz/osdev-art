@@ -44,13 +44,13 @@ namespace vfs {
         (void)ptr;
         (void)size;
         (void)offset;
-        panicf("Cannot write to virtual file node %s", this->getName());
+        panicf("Cannot write to virtual file node %s", this->getName().str());
     }
     void VirtualNode::read(void* ptr,size_t size, uint64_t offset) {
         (void)ptr;
         (void)size;
         (void)offset;
-        panicf("Cannot read from virtual file node %s", this->getName());
+        panicf("Cannot read from virtual file node %s", this->getName().str());
     }
     bool VirtualNode::isVirtual() {
         return true;
@@ -92,7 +92,7 @@ namespace vfs {
             size_t moduleSize = ((uint32_t)module.mod_end) - ((uint32_t)module.mod_start);
             RAMNode* moduleNode = new RAMNode(name, VFSNodeType::file, module.mod_start, moduleSize);
             modulesDir->addChild(moduleNode);
-            logf("Added module %S\n", moduleNode->getName());
+            logf("Added module %s\n", moduleNode->getName().str());
         }
     }
 };
