@@ -91,6 +91,8 @@ namespace vfs {
             string name(module.string);
             size_t moduleSize = ((uint32_t)module.mod_end) - ((uint32_t)module.mod_start);
             RAMNode* moduleNode = new RAMNode(name, VFSNodeType::file, module.mod_start, moduleSize);
+            modulesDir->addChild(moduleNode);
+            logf("Added module %S\n", moduleNode->getName());
         }
     }
 };

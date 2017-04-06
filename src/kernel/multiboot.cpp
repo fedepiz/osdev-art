@@ -29,8 +29,11 @@ namespace multiboot {
     vector<virt_module_t> get_virt_modules(multiboot_info_t* mbinfo) {
         vector<virt_module_t> vec;
         module_t* module = first_module(mbinfo);
-        vec.push_back(to_virt_module(module));
-        //For now, only load the first module
+        for(unsigned int i = 0; i < mbinfo->mods_count;i++) {
+            vec.push_back(to_virt_module(module));
+            //Next module is placed right after this, so...
+            module++;
+        }
         return vec;
     }
 
