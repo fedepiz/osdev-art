@@ -43,6 +43,10 @@ namespace util {
                     int x = va_arg(args, int);
                     push_string(vec, "0x");
                     push_string(vec, kstd::itoa(x,16).str);
+                } else if (c == 's') {
+                    //String within a string
+                    char* s = va_arg(args, char*);
+                    push_string(vec, s);
                 }
             } else {
                 //no - just add it to the vector
