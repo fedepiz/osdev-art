@@ -84,7 +84,7 @@ namespace paging {
         //Find the first available free page
         int free_index = this->first_free();
         if(free_index == -1) {
-            kstd::panic("Cannot allocate page - allocator out of memory");
+            panic("Cannot allocate page - allocator out of memory");
             return -1;
         }
         //Ask the frame allocator for a free frame
@@ -110,20 +110,20 @@ namespace paging {
                 //Reserve
                 this->pages_array[page_index] = page_state::reserved;
             } else {
-                kstd::panic("Cannot reserve page - page is not free");
+                panic("Cannot reserve page - page is not free");
             }
         } else {
-            kstd::panic("Cannot reserve page - invalid index");
+            panic("Cannot reserve page - invalid index");
         }
     }
 
     void page_allocator::free(int page) {
         int page_index = page - this->base_page;
         if(page_index < 0 || (unsigned int)page_index >= this->pages_count) {
-            kstd::panic("Invalid page number");
+            panic("Invalid page number");
         }
         if(!this->pages_array[page_index]){
-            kstd::panic("Attempting to free unused page");
+            panic("Attempting to free unused page");
         }
         //Get the index of the frame currently mapped to this page
         int frame_index = paging::frame_of_page(page);

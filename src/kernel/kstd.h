@@ -19,7 +19,6 @@ void memcpy(void* destination, const void* source, size_t num);
 int atoi(char *str);
 int itoa(int value, char *sp, int radix = 10);
 smallString itoa(int value, int radix = 10);
-void panic(const char* message);
 void puts(const char* message);
 void puterr(const char* message);
 void log(const char* message);
@@ -31,5 +30,14 @@ void* malloc(size_t count);
 void* calloc(size_t count);
 void free(void* ptr);
 void cfree(void* ptr);
+
+
 };
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define AT "\nat" __FILE__ ":" TOSTRING(__LINE__) "\n"
+
+void _panic(const char* message, const char* pos);
+#define panic(message) _panic(message, AT);
 #endif

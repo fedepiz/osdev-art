@@ -36,7 +36,7 @@ heapBlockHeader* blockAt(void* genPtr) {
     uint8_t* ptr = (uint8_t*)genPtr;
     heapBlockHeader* header = (heapBlockHeader*)(ptr - sizeof(heapBlockHeader));
     if(header->magic != HEAP_HEADER_MAGIC) {
-        return nullptr;//kstd::panic("Magic number mismatch, not a valid heap block header");
+        return nullptr;//panic("Magic number mismatch, not a valid heap block header");
     }
     return header;
 }

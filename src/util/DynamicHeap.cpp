@@ -12,7 +12,6 @@ namespace util {
     using heap_common::blockAt;
 
     using kstd::log;
-    using kstd::panic;
 
     void DynamicHeap::initialize(paging::page_allocator* page_allocator) {
         this->page_allocator = page_allocator;

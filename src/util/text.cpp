@@ -94,7 +94,7 @@ namespace util {
         char* str = vsformat(fmt, args);
         va_end(args);
 
-        kstd::panic(str);
+        panic(str);
         delete str;
     }
 };

@@ -53,10 +53,10 @@ namespace util {
 
     template <class T> T& vector<T>::operator[] (int index) {
         if(index < 0) {
-            kstd::panic("Negative index in vector []");
+            panic("Negative index in vector []");
         }
         if((size_t)index >= this->item_count) {
-            kstd::panic("Vector indexed out of bounds");
+            panic("Vector indexed out of bounds");
         }
         return array[index];
     }
@@ -67,10 +67,10 @@ namespace util {
 
     template <class T> void vector<T>::erase(int index) {
         if(index < 0) {
-            kstd::panic("Negative index in vector::erase");
+            panic("Negative index in vector::erase");
         }
         if((size_t)index >= this->item_count) {
-            kstd::panic("Vector indexed out of bounds");
+            panic("Vector indexed out of bounds");
         }
         //Move all elements one closer
         for(size_t i = index+1; i < this->item_count;i++) {

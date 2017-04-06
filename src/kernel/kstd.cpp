@@ -82,18 +82,6 @@ smallString itoa(int value, int radix) {
     return str;
 }
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define AT "\nat" __FILE__ ":" TOSTRING(__LINE__) "\n"
-
-void panic(const char* message) {
-	puterr("PANIC: ");
-	puterr(message);
-	puterr(AT);
-	for(;;) {
-		//Hang
-	}
-}
 
 void puts(const char* message) {
     global_out_writestring(message);
@@ -107,3 +95,12 @@ void log(const char* message) {
     global_debug_writestring(message);
 }
 };
+
+void _panic(const char* message, const char* pos) {
+    kstd::puterr("PANIC: ");
+	kstd::puterr(message);
+    kstd::puterr(pos);
+	for(;;) {
+		//Hang
+	}
+}

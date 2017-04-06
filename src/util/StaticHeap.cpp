@@ -3,7 +3,6 @@
 
 namespace util {
 using kstd::log;
-using kstd::panic;
 
 using heap_common::heapBlockHeader;
 using heap_common::heapSize;
@@ -22,7 +21,7 @@ heapBlockHeader* StaticHeap::findFreeBlock() {
         ptr = ptr->nextBlock;
     }
     if(ptr == nullptr && this->isStrict) {
-        kstd::panic("Cannot find free block");
+        panic("Cannot find free block");
     }
     return ptr;
 }
@@ -33,7 +32,7 @@ void* StaticHeap::malloc(size_t count) {
         return nullptr;
     void* memPtr = allocate(freeBlock, count);
     if(memPtr == nullptr && this->isStrict) {
-        kstd::panic("Failed allocating block");
+        panic("Failed allocating block");
     }
     return memPtr;
 }
@@ -42,10 +41,10 @@ void StaticHeap::free(void* genPtr) {
     uint8_t* ptr = (uint8_t*) genPtr;
     heapBlockHeader* header = (heapBlockHeader*)(ptr - sizeof(heapBlockHeader));
     if(header->magic != HEAP_HEADER_MAGIC) {
-        kstd::panic("Magic number mismatch, not a valid heap block header");
+        panic("Magic number mismatch, not a valid heap block header");
     }
     if(header->isFree) {
-        kstd::panic("Attempting double free");
+        panic("Attempting double free");
     }
     header->isFree = true;
     tryMergeBlockWithSuccessor(header);
