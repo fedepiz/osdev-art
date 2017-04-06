@@ -25,6 +25,7 @@ enum vga_color {
 };
 
 void initialize(void);
+void clear();
 void setcolor(uint8_t color);
 void putchar(char c);
 void puts(const char* data);

@@ -145,12 +145,16 @@ void print_rainbow(const char* ptr) {
 	logf("%d %d\n", ring.count(), ring.available());
 	ring.push_back(0);
 */
-
+#include <kterm/Terminal.h>
 extern "C" void kernel_main(uint32_t ebx) {
 	initialize(ebx);
 	//testPageAllocator();
 	//testDynamicHeap();
 	util::printf("Welcome to Art v0.01a\n");
 	print_rainbow("\"Beauty lies in the eye of the beholder\"\n");
+	
+	kterm::Terminal terminal;
+	terminal.putLine("Test");
+	terminal.putLine("It is a clear, clear test");
 	hang();
 }

@@ -3,17 +3,26 @@
 #include <stddef.h>
 #include <string.h>
 #include <util/ring.h>
+#include <stdint.h>
 namespace kterm {
-    const size_t TERMINAL_COLUMN_LENGTH = 80;
-    const size_t TERMINAL_NUM_COLS = 25;
-    const size_t TERMINAL_BUFFER_SIZE = TERMINAL_COLUMN_LENGTH*TERMINAL_NUM_COLS*15;
+    using util::ring;
+
+    const size_t TERMINAL_LINE_LENGTH = 80;
+    const size_t TERMINAL_NUM_LINES = 25;
+    const size_t TERMINAL_BUFFER_SIZE = TERMINAL_LINE_LENGTH*TERMINAL_NUM_LINES*15;
+
+    struct term_line {
+        char str[TERMINAL_LINE_LENGTH];
+    };
 
     class Terminal {
         private:
-        char buffer[TERMINAL_BUFFER_SIZE];
-        char* bufferHead;
+        ring<term_line> lineBuffer;
         bool echoLine;
+        int xPos;
         //Helpers
+        //Draws the screen on the vga_terminal, starting with a given line offset
+        void flush(unsigned int lineOffset);
         public:
         Terminal();
         ~Terminal();

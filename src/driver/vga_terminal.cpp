@@ -75,4 +75,10 @@ void write(const char* data, size_t size) {
 void puts(const char* data) {
 	write(data, kstd::strlen(data));
 }
+
+void clear() {
+	kstd::memset(terminal_buffer, 0, VGA_WIDTH*VGA_HEIGHT*sizeof(uint16_t));
+	terminal_column = 0;
+	terminal_row = 0;
+}
 };
