@@ -4,6 +4,7 @@
 #include <kstdlib.h>
 #include <util/vector.h>
 #include <stdarg.h>
+#include <string.h>
 
 namespace util {
     using util::vector;
@@ -50,6 +51,9 @@ namespace util {
                     //String within a string
                     char* s = va_arg(args, char*);
                     push_string(vec, s);
+                } else if ( c == 'S') {
+                    kstd::string s = va_arg(args, kstd::string);
+                    push_string(vec, s.str());
                 }
             } else {
                 //no - just add it to the vector

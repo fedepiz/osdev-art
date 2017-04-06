@@ -1,17 +1,18 @@
 #include <filesystem/VFS.h>
 #include <kstdlib.h>
 #include <util/text.h>
+#include <kernel/multiboot.h>
 namespace vfs {
+    using util::logf;
     using util::panicf;
-    VFSNode::VFSNode(const char* name, VFSNodeType type) {
-        //Copy the name
-        size_t name_len = kstd::strlen(name)+1;
-        this->name = new char[name_len];
-        kstd::memcpy(this->name, name, name_len);
+    using util::vector;
+    using kstd::string;
+    VFSNode::VFSNode(string name, VFSNodeType type) {
+        this->name = name;
         //The node type
         this->type = type;
     }
-    const char* VFSNode::getName() const {
+    string VFSNode::getName() const {
         return this->name;
     }
     VFSNodeType VFSNode::getType() const {
@@ -22,7 +23,20 @@ namespace vfs {
         return this->children;
     } 
 
-    VirtualNode::VirtualNode(const char* name, VFSNodeType type):VFSNode(name, type) {
+    bool VFSNode::addChild(VFSNode* newChild) {
+        //For now, simply check that child does not already exist
+        for(unsigned int i = 0; i < this->children.size();i++) {
+            VFSNode* child = this->children[i];
+            if(string::compare(child->getName(), newChild->getName()) == 0) {
+                //Child already present, abort
+                return false;
+            }
+        }
+        this->children.push_back(newChild);
+        return true;
+    }
+
+    VirtualNode::VirtualNode(string name, VFSNodeType type):VFSNode(name, type) {
 
     }
 
@@ -42,7 +56,7 @@ namespace vfs {
         return true;
     }
 
-    RAMNode::RAMNode(const char* name, VFSNodeType type, void* buffer, size_t size):VFSNode(name, type) {
+    RAMNode::RAMNode(string name, VFSNodeType type, void* buffer, size_t size):VFSNode(name, type) {
         this->buffer = (uint8_t*)buffer;
         this->size = size;
     }
@@ -61,5 +75,22 @@ namespace vfs {
 
     void initialize() {
         root = new VirtualNode("root", VFSNodeType::directory);
+    }
+
+    void mount_multiboot_modules(multiboot::multiboot_info_t* mbinfo){
+        //For now, make a file per module, and add under a specific multiboot file
+        //First, make the parent file
+        VirtualNode* modulesDir = new VirtualNode("/modules", VFSNodeType::directory);
+        if(!root->addChild(modulesDir)) {
+            panic("Could not mount child /modules onto virtual root");
+        }
+        //Add modules to root
+        vector<multiboot::virt_module_t> modules = multiboot::get_virt_modules(mbinfo);
+        for(unsigned int i = 0; i < modules.size();i++) {
+            auto module = modules[i];
+            string name(module.string);
+            size_t moduleSize = ((uint32_t)module.mod_end) - ((uint32_t)module.mod_start);
+            RAMNode* moduleNode = new RAMNode(name, VFSNodeType::file, module.mod_start, moduleSize);
+        }
     }
 };

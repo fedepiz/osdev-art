@@ -19,5 +19,4 @@ void log(const char* message);
 
 void _panic(const char* message, const char* pos);
 #define panic(message) _panic(message, AT);
-
 #endif

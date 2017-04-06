@@ -4,14 +4,34 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <util/text.h>
+#include <util/vector.h>
+
 namespace multiboot {
     using util::logf;
+    using util::vector;
     module_t* first_module(multiboot_info_t* mbinfo) {
         //Phyisical address of first module
         uint32_t mod_address = mbinfo->mods_addr + arch::KERNEL_VIRTUAL_BASE;
         //Get the module out
         module_t* module = (module_t*)mod_address;
         return module;
+    }
+
+    virt_module_t to_virt_module(module_t* module) {
+        virt_module_t virt;
+        virt.mod_start = (void*)(module->mod_start + arch::KERNEL_VIRTUAL_BASE);
+        virt.mod_end = (void*)(module->mod_end + arch::KERNEL_VIRTUAL_BASE);
+        virt.string = (const char*)(module->string + arch::KERNEL_VIRTUAL_BASE);
+        virt.reserved = module->reserved;
+        return virt;
+    }
+
+    vector<virt_module_t> get_virt_modules(multiboot_info_t* mbinfo) {
+        vector<virt_module_t> vec;
+        module_t* module = first_module(mbinfo);
+        vec.push_back(to_virt_module(module));
+        //For now, only load the first module
+        return vec;
     }
 
     void debug(multiboot_info_t* mbinfo) {

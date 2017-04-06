@@ -21,6 +21,8 @@ i686-elf-g++ -c src/kernel/multiboot.cpp -o build/kernel/multiboot.o $CFLAGS
 i686-elf-g++ -c src/kstd/kstdio.cpp -o build/kstd/kstdio.o $CFLAGS
 i686-elf-g++ -c src/kstd/kstdlib.cpp -o build/kstd/kstdlib.o $CFLAGS
 i686-elf-g++ -c src/kstd/kcpp_support.cpp -o build/kstd/kcpp_support.o $CFLAGS
+i686-elf-g++ -c src/kstd/string.cpp -o build/kstd/string.o $CFLAGS
+
 
 i686-elf-g++ -c src/driver/vga_terminal.cpp -o build/driver/vga_terminal.o $CFLAGS
 i686-elf-g++ -c src/driver/pit.cpp -o build/driver/pit.o $CFLAGS

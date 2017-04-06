@@ -20,6 +20,8 @@
 #ifndef KERNEL_MULTIBOOT_H
 #define KERNEL_MULTIBOOT_H
 #include <stddef.h>
+#include <util/vector.h>
+
 namespace multiboot {
 /* The magic number for the Multiboot header. */
 #define MULTIBOOT_HEADER_MAGIC 0x1BADB002
@@ -107,6 +109,13 @@ typedef struct module
     unsigned long reserved;
 } module_t;
 
+typedef struct virt_module {
+    void* mod_start;
+    void* mod_end;
+    const char* string;
+    unsigned long reserved;
+} virt_module_t;
+
 /* The memory map. Be careful that the offset 0 is base_addr_low
             but no size. */
 typedef struct memory_mapvoid
@@ -120,7 +129,11 @@ typedef struct memory_mapvoid
 } memory_map_t;
 
 #endif /* ! ASM */
+
+
 void* load_module(multiboot_info_t* mbinfo, size_t *length);
 void reserve_modules_frames(multiboot_info_t* mbinfo);
+virt_module_t to_virt_module(module_t* ptr);
+util::vector<virt_module_t> get_virt_modules(multiboot_info_t* mbinfo);
 };
 #endif

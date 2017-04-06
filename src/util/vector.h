@@ -18,6 +18,8 @@ namespace util {
         ~vector();
         void push_back(const T& val);
         T& operator[](int index);
+        T get(int index) const;
+        vector<T>& operator=(const vector& other);
         size_t size() const;
         void erase(int position);
         void clear();
@@ -50,6 +52,16 @@ namespace util {
         }
         this->array[item_count] = val;
         item_count++;
+    }
+
+    template <class T> T vector<T>::get(int index) const {
+        if(index < 0) {
+            panic("Negative index in vector get");
+        }
+        if((size_t)index >= this->item_count) {
+            panic("Vector indexed out of bounds");
+        }
+        return array[index];
     }
 
     template <class T> T& vector<T>::operator[] (int index) {
@@ -87,5 +99,14 @@ namespace util {
         kstd::memset(this->array, 0, sizeof(T)*arr_size);
         this->item_count = 0;
     }
+
+    template <class T> vector<T>& vector<T>::operator=(const vector& other) {
+        this->arr_size = other->arr_size;
+        this->item_count = other->item_count;
+        this->array = new T[arr_size];
+        kstd::memcpy(this->array, other->array, this->item_count*sizeof(T));
+        return *this;
+    }
+
 };
 #endif

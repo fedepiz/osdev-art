@@ -9,7 +9,7 @@ size_t strlen(const char* str) {
 	return len;
 }
 
-int strcmp(char* str1, char* str2) {
+int strcmp(const char* str1, const char* str2) {
     while(*str1 != '\0') {
         char diff = *str1 - *str2;
         if(diff != 0) {
