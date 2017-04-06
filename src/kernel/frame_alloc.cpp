@@ -75,6 +75,7 @@ namespace frame_alloc {
         unsigned int free;
         unsigned int reserved;
         unsigned int allocated;
+        unsigned int unavailable;
     };
 
     frame_allocator_count count_frames() {
@@ -110,6 +111,8 @@ namespace frame_alloc {
             kstd::log("FREE");
         } else if (state == frame_state::RESERVED) {
             kstd::log("RESERVED");
+        } else if (state == frame_state::UNAVAILABLE) {
+            kstd::log("UNAVAILABLE");
         }
         kstd::log("\n");
     }
@@ -134,13 +137,17 @@ namespace frame_alloc {
 
 
 
-    void initialize(uint32_t upper_address) {
+    void initialize(uint32_t kenrel_upper_address, uint32_t upper_mem_limit) {
         //Kernel is physically allocated at 0, reserve that amount of frames
-        int kernel_frame_count = frames_in_range(upper_address);
+        int kernel_frame_count = frames_in_range(kenrel_upper_address);
+        int mem_max_index = frames_in_range(upper_mem_limit);
         for(int i = 0; i < NUM_FRAMES; i++) {
             if(i <= kernel_frame_count) {
                 frame_array[i] = frame_state::RESERVED;
-            } else {
+            } else if (i >= mem_max_index){
+               frame_array[i] = frame_state::UNAVAILABLE;
+            } 
+            else {
                 frame_array[i] = frame_state::FREE;
             }
         }

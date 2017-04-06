@@ -51,8 +51,8 @@ void initialize(uint32_t ebx) {
 	//Initialize the basic architecture parts (gdt, idt, interrupts, etc etc)
 	arch::initialize();
 	//Initialize the kernel frame allocator
-	uint32_t mem_size = mbinfo->mem_upper;
-	frame_alloc::initialize(arch::kernel_size());
+	uint32_t mem_size = mbinfo->mem_upper*1024; //1 KiB per unit
+	frame_alloc::initialize(arch::kernel_size(), mem_size);
 	//Reserve the memory of the multiboot modules
 	//(must happen before we initialize the kernel heap and start dishing out frames)
 	multiboot::reserve_modules_frames(mbinfo);

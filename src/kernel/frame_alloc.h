@@ -14,7 +14,7 @@ namespace frame_alloc {
     void reserve(int frame);
     void free(int frame);
     int available();
-    void initialize(uint32_t kernel_upper_address);
+    void initialize(uint32_t kernel_upper_address, uint32_t memory_upper_limit);
     void debug(bool verbose);
 };
 #endif
