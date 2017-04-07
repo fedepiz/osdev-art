@@ -154,6 +154,7 @@ void print_rainbow(const char* ptr) {
 */
 
 #include <kterm/Terminal.h>
+#include <kterm/Shell.h>
 #include <util/list.h>
 extern "C" void kernel_main(uint32_t ebx) {
 	initialize(ebx);
@@ -178,24 +179,7 @@ extern "C" void kernel_main(uint32_t ebx) {
 	kterm::Terminal terminal;
 	terminal.become_master();
 
-	while(true) {
-		kstd::string line = terminal.gets();
-		int compareRes = 1;
-		//int compareRes = kstd::string::compare(line, kstd::string("quit"));
-		//logf("compare result %d\n", compareRes);
-		if(compareRes == 0){
-			break;
-		}
-	}
-	//util::list<int> list;
-	//list.append(1);
-	//int x = list.behead();
-	/*for(int i =0 ; i < 100; i++) {
-		log("---Iteration ");
-		log(itoa(i).str);
-		log("---\n");
-		vec.push_back(i);
-	}*/
-	//From this point onwards, this terminal is used for I/O
+	kterm::Shell shell(&terminal);
+	shell.mainLoop();
 	hang();
 }

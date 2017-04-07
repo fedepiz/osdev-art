@@ -45,10 +45,24 @@ namespace kstd {
         return this->buffer[index];
     }
 
-    const char* string::str() {
+    const char* string::str() const {
         return this->buffer;
     }
-    int string::compare(const string& s1,const string& s2) {
-        return kstd::strcmp(s1.buffer, s2.buffer);
+    bool string::compare(const string& s1,const string& s2) {
+        if(s1.length != s2.length) {
+            return false;
+        }
+        for(unsigned int i = 0; i < s1.length; i++) {
+            if(s1[i] != s2[i]) return false;
+        }
+        return true;
+    }
+
+    bool string::operator==(const string& other) const {
+        return string::compare(*this, other);
+    }
+
+    bool string::operator!=(const string& other) const {
+        return !(*this == other);
     }
 };

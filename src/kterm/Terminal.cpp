@@ -151,7 +151,13 @@ namespace kterm {
             c = this->getchar();
         }
         //char* c_str = util::vector_as_string(vec);
-        string str;
+        char* c_str = new char[vec.size()+1];
+        for(unsigned int i = 0; i < vec.size(); i++) {
+            c_str[i] = vec[i];
+        }
+        c_str[vec.size()] = '\0';
+
+        string str(c_str);
         //delete c_str;
         //logf("LEAVING GETS\n");
         return str;

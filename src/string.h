@@ -14,8 +14,10 @@ namespace kstd {
         string& operator=(const string& other);
         unsigned int size() const;
         char operator[](unsigned int index) const;
-        static int compare(const string& s1, const string& s2);
-        const char* str();
+        bool operator==(const string& other) const;
+        bool operator!=(const string& other) const;
+        static bool compare(const string& s1, const string& s2);
+        const char* str() const;
     };
 };
 #endif
