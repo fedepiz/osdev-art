@@ -1,8 +1,11 @@
 #ifndef KSTD_VECTOR_H
 #define KSTD_VECTOR_H
+
 #include <kstdio.h>
 #include <kstdlib.h>
 #include <stddef.h>
+#include <util/text.h>
+
 namespace util {
     const size_t VECTOR_INIITAL_SIZE = 50;
 
@@ -25,13 +28,15 @@ namespace util {
         void clear();
     };
 
-    template <class T> vector<T>::vector() {
+    template <class T> vector<T>::vector() {       
+        logf("Constructing vector of element size %d\n", sizeof(T));
         this->array = new T[VECTOR_INIITAL_SIZE];
         this->arr_size = VECTOR_INIITAL_SIZE;
         this->item_count = 0;
     }
 
     template <class T> vector<T>::~vector() {
+        logf("Destroying vector of size %d\n", this->arr_size * sizeof(T));
         delete this->array;
     }
 

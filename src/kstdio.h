@@ -10,6 +10,9 @@ namespace kstd {
 void puts(const char* message);
 void puterr(const char* message);
 void log(const char* message);
+void putch(char c);
+void logch(char c);
+void puterrch(char c);
 };
 
 

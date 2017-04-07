@@ -10,6 +10,7 @@
 namespace kterm {
     using kstd::string;
     using util::logf;
+    using keyboard::key_info_t;
 
     unsigned char kbdus[128] = {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
@@ -51,9 +52,9 @@ namespace kterm {
 };		
 
     Terminal* inputMasterTerminal = nullptr;
-    void inputMasterOnKeyPress(unsigned char keycode) {
+    void inputMasterOnKeyPress(keyboard::key_info_t key_info) {
         if(inputMasterTerminal != nullptr) {
-            inputMasterTerminal->_signal_key_pressed(keycode);
+            inputMasterTerminal->_signal_key_pressed(key_info);
         }
     }
 
@@ -63,7 +64,7 @@ namespace kterm {
         }
     }
 
-    Terminal::Terminal() : outBuffer(TERMINAL_BUFFER_SIZE), inBuffer(TERMINAL_BUFFER_SIZE) {
+    Terminal::Terminal() {
         this->mode = TerminalMode::RAW;
         this->inputEcho = true;
     }
@@ -87,7 +88,7 @@ namespace kterm {
         if(this->mode == RAW) {
             vga_term::putchar(c);
         } else if(this->mode == COOKED) {
-            this->outBuffer.push_back(c);
+            this->outBuffer.append(c);
             //User pressed enter
             if(c == '\n') {
                 this->flushOutBuffer();
@@ -102,38 +103,35 @@ namespace kterm {
     }
     
     void Terminal::flushOutBuffer() {
-        while(this->outBuffer.count() > 0) {
-            char c = outBuffer.pop_front();
+        while(!this->outBuffer.is_empty()) {
+            char c = outBuffer.behead();
             vga_term::putchar(c);
         }
     }
 
+    bool Terminal::hasInput() {
+        return this->inBuffer.is_empty();
+    }
+    
     char Terminal::getchar() {
-        char ch;
-        if(inBuffer.count() > 0) {
-            ch = inBuffer.pop_front();
-        } else {
-            //Must do block read - unregister if currently the master
-            bool isMaster = this == inputMasterTerminal;
-            if(isMaster) {
-                inputMasterTerminal = nullptr;
-            }
-            //Invoke blocking keyboard driver read
-            unsigned char scancode = keyboard::get_key();
-            //Re-activate master if was so
-            if(isMaster) {
-              inputMasterTerminal = this;
-            }
-            
-            ch = kbdus[scancode];
+        logf("ENTERING GETCHAR\n");
+        //Block until we have input
+        while(!this->hasInput()) {
+            //hacky for now, but enforces the loop
+            logf("");
         }
+
+        key_info_t key_info = this->inBuffer.behead();
+        char ch = kbdus[key_info.keycode];
         if(this->inputEcho) {
            this->putchar(ch);
         }
+        logf("LEAVING GETCHAR\n");
         return ch;
     }
 
     string Terminal::gets() {
+        logf("ENTERING GETS\n");
         util::vector<char> vec;
         char c = this->getchar();
         //While not enter
@@ -141,22 +139,25 @@ namespace kterm {
             vec.push_back(c);
             c = this->getchar();
         }
-        char* c_str = util::vector_as_string(vec);
-        string str(c_str);
-        delete c_str;
+        //char* c_str = util::vector_as_string(vec);
+        string str;
+        //delete c_str;
+        logf("LEAVING GETS\n");
         return str;
     }
 
     void Terminal::become_master() {
         inputMasterTerminal = this;
-        keyboard::active_on_key_press_handler = inputMasterOnKeyPress;
+        keyboard::active_key_handler = inputMasterOnKeyPress;
         globals* globs = get_globals();
         globs->out_writestring = inputMasterWritestring;
         globs->error_writestring = inputMasterWritestring;
     }
 
-    void Terminal::_signal_key_pressed(unsigned char scancode) {
-        this->inBuffer.push_back(scancode);
+    void Terminal::_signal_key_pressed(key_info_t key_info) {
+        if(key_info.released == true) {
+            this->inBuffer.append(key_info);
+        }
     }
     /*
     string Terminal::readLine() {

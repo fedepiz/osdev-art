@@ -1,25 +1,31 @@
 #include <string.h>
 #include <kstdlib.h>
 #include <kstdio.h>
+#include <util/text.h>
 namespace kstd {
+    using util::logf;
     string::string() {
+        logf("Allocating string\n");
         this->buffer = new char[1];
         this->buffer[0] = '\0';
         this->length = 0;
     }
     string::string(const char* str) {
+        logf("Allocating string\n");
         size_t len = strlen(str)+1;
         this->buffer = new char[len];
         this->length = len-1;
         kstd::memcpy(this->buffer, str, len);
     }
     string::string(const string& other) {
+        logf("Allocating string\n");
         this->length = other.length;
         this->buffer = new char[this->length+1];
         kstd::memcpy(this->buffer, other.buffer, this->length+1);
     }
 
     string::~string() {
+        logf("Freeing string\n");
         delete this->buffer;
     }
     string& string::operator=(const string& other) {

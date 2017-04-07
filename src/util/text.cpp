@@ -8,6 +8,8 @@
 
 namespace util {
     using util::vector;
+    using kstd::itoa;
+    using kstd::log;
 
     void push_string(vector<char>& vec, const char* str) {
         //While the string is not over
@@ -74,31 +76,81 @@ namespace util {
         return res;
     }
 
+    typedef void (*writechar_t)(char);
+
+    static void writestring(writechar_t writeF, const char* str) {
+        while(*str != '\0') {
+            writeF(*str);
+            str++;
+        }
+    }
+
+    void implace_format(writechar_t writeF, const char* fmt, va_list args) {
+        //While we have some format characters
+        while(*fmt != '\0') {
+            //is it special?
+            if(*fmt == '%') {
+                //Advance it
+                fmt++;
+                char c = *fmt;
+                if(c == '%') {
+                    //Double % - just counts as one
+                    writeF(c);
+                } else if (c == 'd') {
+                    //print integer in decimal form
+                    int x = va_arg(args, int);
+                    writestring(writeF, kstd::itoa(x).str);
+                } else if (c == 'x') {
+                    //hex
+                    int x = va_arg(args, int);
+                    writestring(writeF, "0x");
+                    writestring(writeF, kstd::itoa(x,16).str);
+                } else if (c == 's') {
+                    //String within a string
+                    char* s = va_arg(args, char*);
+                    writestring(writeF, s);
+                } else if (c == 'b') {
+                    int b = va_arg(args, int);
+                    if(b == 1) {
+                        writestring(writeF, "true");
+                    } else {
+                        writestring(writeF, "false");
+                    }
+                }
+            } else {
+                //no - just add it to the vector
+                writeF(*fmt);
+            }
+            //Advance
+            fmt++;
+        }    
+    }
+
     void printf(const char* fmt, ...) {
         va_list args;
         va_start(args, fmt);
-        char* str = vsformat(fmt, args);
+        implace_format(&kstd::putch, fmt, args);
         va_end(args);
 
-        kstd::puts(str);
-        delete str;
+        //kstd::puts(str);
+        //delete str;
     }
     void logf(const char* fmt, ...){
         va_list args;
         va_start(args, fmt);
-        char* str = vsformat(fmt, args);
+        implace_format(&kstd::logch, fmt, args);
         va_end(args);
 
-        kstd::log(str);
-        delete str;
+        //kstd::log(str);
+        //delete str;
     }
     void panicf(const char* fmt, ...){
         va_list args;
         va_start(args, fmt);
-        char* str = vsformat(fmt, args);
+        implace_format(&kstd::puterrch, fmt, args);
         va_end(args);
 
-        panic(str);
-        delete str;
+        //panic(str);
+        //delete str;
     }
 };

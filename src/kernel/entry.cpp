@@ -67,6 +67,7 @@ void initialize(uint32_t ebx) {
 	pit::initialize(pit::DEFAULT_FREQUENCY_HZ, &pit_test);
 	keyboard::initialize();
 
+	//Filesystem
 	vfs::initialize();
 	vfs::mount_multiboot_modules(mbinfo);
 	//util::logf("%s\n", vfs::root->getName());
@@ -79,7 +80,6 @@ void hang() {
 
 	}
 }
-
 
 void testPageAllocator() {
 	paging::page_allocator* alloc = &paging::kernel_page_allocator;
@@ -152,17 +152,50 @@ void print_rainbow(const char* ptr) {
 	logf("%d %d\n", ring.count(), ring.available());
 	ring.push_back(0);
 */
+
 #include <kterm/Terminal.h>
+#include <util/list.h>
 extern "C" void kernel_main(uint32_t ebx) {
 	initialize(ebx);
 	//testPageAllocator();
 	//testDynamicHeap();
 	util::printf("Welcome to Art v0.01a\n");
 	print_rainbow("\"Beauty lies in the eye of the beholder\"\n");
-	
+
+	/*
+	util::list<int> list;
+	list.append(3);
+	list.append(4);
+	list.append(5);
+	logf("List length %d ( = 3)\n", list.length());
+	int head = list.behead();
+	logf("After beheading, value is %d, length %d\n", head, list.length());
+	*/
+
 	//Creates a terminal and makes it the main input controller
+	kstd::kernel_heap.chatty_mode(true);
+	
 	kterm::Terminal terminal;
 	terminal.become_master();
+
+	while(true) {
+		kstd::string line = terminal.gets();
+		int compareRes = 1;
+		//int compareRes = kstd::string::compare(line, kstd::string("quit"));
+		//logf("compare result %d\n", compareRes);
+		if(compareRes == 0){
+			break;
+		}
+	}
+	//util::list<int> list;
+	//list.append(1);
+	//int x = list.behead();
+	/*for(int i =0 ; i < 100; i++) {
+		log("---Iteration ");
+		log(itoa(i).str);
+		log("---\n");
+		vec.push_back(i);
+	}*/
 	//From this point onwards, this terminal is used for I/O
 	hang();
 }

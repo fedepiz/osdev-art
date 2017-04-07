@@ -2,7 +2,7 @@
 #include <util/heap_common.h>
 #include <kstdio.h>
 #include <kstdlib.h>
-
+#include <util/text.h>
 
 namespace util {
     using heap_common::heapBlockHeader;
@@ -13,8 +13,11 @@ namespace util {
     using heap_common::blockAt;
 
     using kstd::log;
-
+    using util::logf;
+    using kstd::itoa;
+    
     void DynamicHeap::initialize(paging::page_allocator* page_allocator) {
+        this->is_chatty = false;
         this->page_allocator = page_allocator;
         //Allocate the first page
         int first_page = this->page_allocator->allocate();
@@ -71,10 +74,19 @@ namespace util {
         return true;
     }
 
+    void logHeader(heapBlockHeader* header) {
+        uint32_t dataAddress = ((uint32_t)header) + sizeof(heapBlockHeader);
+        logf("Data address: %x, size %d, is free %b\n", dataAddress, header->size, header->isFree);
+    }
+
     void* DynamicHeap::malloc(size_t count) {
         //See if there is a large enough block
         heapBlockHeader* fittingHeader = heap_common::findFreeBlock(this->head_block, count);
         if(fittingHeader != nullptr) {
+            if(is_chatty) {
+                logf("Allocating %d from memory block ", count);
+                logHeader(fittingHeader);
+            }
             //The block is large enough, proceed with allocation
             return allocate(fittingHeader, count);
         }
@@ -91,6 +103,10 @@ namespace util {
     
     heap_common::heapBlockHeader* DynamicHeap::_free(void* ptr) {
         heapBlockHeader* header = heap_common::blockAt(ptr);
+        if(this->is_chatty) {
+            log("Freeing memory block: ");
+            logHeader(header);
+        }
         if(header == nullptr) {
             panic("Not a valid header block");
         }
@@ -119,5 +135,9 @@ namespace util {
 
     void DynamicHeap::debug() {
         debugBlockChain(this->head_block);
+    }
+
+    void DynamicHeap::chatty_mode(bool mode) {
+        this->is_chatty = mode;
     }
 };

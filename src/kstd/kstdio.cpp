@@ -13,6 +13,27 @@ void puterr(const char* message) {
 void log(const char* message) {
     global_debug_writestring(message);
 }
+
+void logch(char c) {
+    char str[2];
+    str[0] = c;
+    str[1] = '\0';
+    global_debug_writestring(str);
+}
+
+void puterrch(char c) {
+    char str[2];
+    str[0] = c;
+    str[1] = '\0';
+    global_error_writestring(str);
+}
+
+void putch(char c) {
+    char str[2];
+    str[0] = c;
+    str[1] = '\0';
+    global_out_writestring(str);
+}
 };
 
 void _panic(const char* message, const char* pos) {

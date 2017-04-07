@@ -2,13 +2,14 @@
 #define KTERM_TERMINAL_H
 #include <stddef.h>
 #include <string.h>
-#include <util/ring.h>
+#include <driver/keyboard.h>
+#include <util/list.h>
 #include <stdint.h>
 
 const size_t TERMINAL_BUFFER_SIZE = 0x5000; //2K
 
 namespace kterm {
-    using util::ring;
+    using util::list;
 
     enum TerminalMode {
         RAW,
@@ -17,13 +18,14 @@ namespace kterm {
 
     class Terminal {
         private:
-        ring<char> outBuffer;
-        ring<char> inBuffer;
+        list<char> outBuffer;
+        list<keyboard::key_info_t> inBuffer;
         TerminalMode mode;
         bool inputEcho;
         //Helpers
         //Draws the screen on the vga_terminal, starting with a given line offset
         void flushOutBuffer();
+        bool hasInput();
         public:
         Terminal();
         ~Terminal();
@@ -34,7 +36,7 @@ namespace kterm {
         char getchar();
         kstd::string gets();
         void become_master();
-        void _signal_key_pressed(unsigned char scancode);
+        void _signal_key_pressed(keyboard::key_info_t key_info);
         //kstd::string readLine();
         //void putLine(char* str);
         //void putLine(kstd::string str);
