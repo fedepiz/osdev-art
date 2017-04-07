@@ -1,10 +1,14 @@
 #include <driver/keyboard.h>
 #include <kernel/arch.h>
-
 namespace keyboard {
 
 using arch::inb;
 
+//Handler function pointers
+keyevent_handler_t active_on_key_press_handler = nullptr;
+keyevent_handler_t active_on_key_release_handler = nullptr;
+
+volatile bool kb_req;
 volatile bool kb_block;
 unsigned char kb_last_press;
 bool kb_status[128];
@@ -15,22 +19,33 @@ void keyboard_handler(struct arch::regs *r) {
 
     /* Read from the keyboard's data buffer */
     scancode = inb(0x60);
+    
 
     /* If the top bit of the byte we read from the keyboard is
     *  set, that means that a key has just been released */
     if (scancode & 0x80) {
         /* You can use this one to see if the user released the
         *  shift, alt, or control keys... */
-        kb_status[scancode] = false;
+        kb_status[scancode & (!0x80)] = false;
+        if(active_on_key_release_handler != nullptr) {
+            active_on_key_release_handler(scancode);
+        }
     }
     else {
         kb_status[scancode] = true;
        kb_last_press = scancode;
+       if(active_on_key_press_handler != nullptr) {
+           active_on_key_press_handler(scancode);
+       }
+       if(kb_req) {
+           kb_req = false;
+           kb_block = false; 
+       }
     }
-    kb_block = false; 
 }
 
 unsigned char get_key() {
+    kb_req = true;
     kb_block = true;
     while(kb_block) {
         //spin

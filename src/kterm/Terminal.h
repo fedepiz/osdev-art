@@ -4,31 +4,40 @@
 #include <string.h>
 #include <util/ring.h>
 #include <stdint.h>
+
+const size_t TERMINAL_BUFFER_SIZE = 0x5000; //2K
+
 namespace kterm {
     using util::ring;
 
-    const size_t TERMINAL_LINE_LENGTH = 80;
-    const size_t TERMINAL_NUM_LINES = 25;
-    const size_t TERMINAL_BUFFER_SIZE = TERMINAL_LINE_LENGTH*TERMINAL_NUM_LINES*15;
-
-    struct term_line {
-        char str[TERMINAL_LINE_LENGTH];
+    enum TerminalMode {
+        RAW,
+        COOKED
     };
 
     class Terminal {
         private:
-        ring<term_line> lineBuffer;
-        bool echoLine;
-        int xPos;
+        ring<char> outBuffer;
+        ring<char> inBuffer;
+        TerminalMode mode;
+        bool inputEcho;
         //Helpers
         //Draws the screen on the vga_terminal, starting with a given line offset
-        void flush(unsigned int lineOffset);
+        void flushOutBuffer();
         public:
         Terminal();
         ~Terminal();
-        kstd::string readLine();
-        void putLine(char* str);
-        void putLine(kstd::string str);
+        void setMode(TerminalMode mode);
+        TerminalMode getMode();
+        void putchar(char c);
+        void puts(char* str);
+        char getchar();
+        kstd::string gets();
+        void become_master();
+        void _signal_key_pressed(unsigned char scancode);
+        //kstd::string readLine();
+        //void putLine(char* str);
+        //void putLine(kstd::string str);
     };
     
 };

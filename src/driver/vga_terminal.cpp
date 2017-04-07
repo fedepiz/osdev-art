@@ -81,11 +81,24 @@ static void advance_column() {
   }
 }
 
+static void back() {
+	if(terminal_column > 0) {
+		//Go back
+		terminal_column--;
+		//Write black
+		putchar(' ');
+		//and back again
+		terminal_column--;
+	}
+}
+
  void putchar(char c) {
   if(c == '\n') {
     terminal_column = 0;
     advance_row();
-  } else {
+  } else if (c == '\b') {
+	  back();
+  }else {
 	  terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
 	  advance_column();
   }

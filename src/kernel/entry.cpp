@@ -163,7 +163,9 @@ extern "C" void kernel_main(uint32_t ebx) {
 	//for(int i = 0; i < 100; i++){
 	//	util::printf("%d\n", i);
 	//}
-	//kterm::Terminal terminal;
+	kterm::Terminal terminal;
+	terminal.become_master();
+	terminal.gets();
 	//terminal.putLine("Test");
 	//terminal.putLine("It is a clear, clear test");
 	hang();
