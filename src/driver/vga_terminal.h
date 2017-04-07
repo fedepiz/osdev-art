@@ -5,7 +5,7 @@
 
 namespace vga_term {
 /* Hardware text mode color constants. */
-enum vga_color {
+enum color {
 	VGA_COLOR_BLACK = 0,
 	VGA_COLOR_BLUE = 1,
 	VGA_COLOR_GREEN = 2,
@@ -26,7 +26,9 @@ enum vga_color {
 
 void initialize(void);
 void clear();
-void setcolor(uint8_t color);
+void set_wrap_around(bool);
+void set_color(uint8_t color);
+void set_color(color fg, color bg);
 void putchar(char c);
 void puts(const char* data);
 };

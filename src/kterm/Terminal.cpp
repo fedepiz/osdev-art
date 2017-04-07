@@ -19,7 +19,6 @@ namespace kterm {
     }
 
     string Terminal::readLine() {
-
     }
 
     void Terminal::putLine(char* str) {

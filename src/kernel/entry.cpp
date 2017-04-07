@@ -112,17 +112,24 @@ void testDynamicHeap() {
 }
 
 void print_rainbow(const char* ptr) {
-	uint8_t color = 1;
+	uint8_t color = 0;
+	uint8_t colorbg = 6;
 	while(*ptr != '\0') {
 		uint8_t actualColor = color;
-		if(color == vga_term::vga_color::VGA_COLOR_BLUE) actualColor = 15;
-		vga_term::setcolor(actualColor);
+		uint8_t actualBgColor = colorbg;
+		if(actualColor == actualBgColor) {
+			actualColor = 15;
+			actualBgColor = 0;
+		}
+		vga_term::set_color(static_cast<vga_term::color>(actualColor), static_cast<vga_term::color>(actualBgColor));
 		vga_term::putchar(*ptr);
 		color++;
-		if(color > 6) color = 1;
+		colorbg--;
+		if(color > 6) color = 0;
+		if(colorbg == 0) colorbg = 6;
 		ptr++;
 	}
-	vga_term::setcolor(vga_term::vga_color::VGA_COLOR_WHITE);
+	vga_term::set_color(vga_term::color::VGA_COLOR_WHITE);
 }
 
 
@@ -153,8 +160,11 @@ extern "C" void kernel_main(uint32_t ebx) {
 	util::printf("Welcome to Art v0.01a\n");
 	print_rainbow("\"Beauty lies in the eye of the beholder\"\n");
 	
-	kterm::Terminal terminal;
-	terminal.putLine("Test");
-	terminal.putLine("It is a clear, clear test");
+	//for(int i = 0; i < 100; i++){
+	//	util::printf("%d\n", i);
+	//}
+	//kterm::Terminal terminal;
+	//terminal.putLine("Test");
+	//terminal.putLine("It is a clear, clear test");
 	hang();
 }

@@ -5,7 +5,9 @@
 namespace vga_term {
 const uint32_t TERMINAL_BUFFER_BASE_ADDRESS = 0x000B8000;
 
-static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) {
+bool wrap_around = false;
+
+static inline uint8_t vga_entry_color(enum color fg, enum color bg) {
 	return fg | bg << 4;
 }
 
@@ -35,8 +37,16 @@ void initialize(void) {
 	}
 }
 
-void setcolor(uint8_t color) {
+void set_wrap_around(bool state){
+	wrap_around = state;
+}
+
+void set_color(uint8_t color) {
 	terminal_color = color;
+}
+
+void set_color(color fg, color bg) {
+	set_color(vga_entry_color(fg, bg));
 }
 
 void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
@@ -44,20 +54,34 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
 	terminal_buffer[index] = vga_entry(c, color);
 }
 
-void advance_row() {
+static void copy_up() {
+	for(size_t i = 0; i < VGA_HEIGHT - 1; i++) {
+		uint16_t* destLine = terminal_buffer + i*VGA_WIDTH;
+		uint16_t* sourceLine = terminal_buffer + (i + 1)*VGA_WIDTH;
+		kstd::memcpy(destLine, sourceLine, sizeof(uint16_t)*VGA_WIDTH);
+	}
+}
+
+static void advance_row() {
   if (++terminal_row == VGA_HEIGHT) {
-    terminal_row = 0;
+		if(wrap_around) {
+    	terminal_row = 0;
+		} else {
+			--terminal_row;
+			//copy everything up
+			copy_up();
+		}
   }
 }
 
-void advance_column() {
+static void advance_column() {
   if(++terminal_column == VGA_WIDTH) {
     terminal_column = 0;
     advance_row();
   }
 }
 
-void putchar(char c) {
+ void putchar(char c) {
   if(c == '\n') {
     terminal_column = 0;
     advance_row();
