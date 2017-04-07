@@ -7,7 +7,7 @@ mkdir -p build/filesystem
 mkdir -p build/kstd
 mkdir -p build/kterm
 
-export CFLAGS="-std=c++11 -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Isrc"
+export CFLAGS="-std=c++11 -nostdlib -nostartfiles -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Isrc -lgcc"
 
 nasm -felf32 src/arch/boot.s -o build/arch/boot.o
 nasm -felf32 src/arch/helpers.s -o build/arch/helpers.o
@@ -40,6 +40,4 @@ i686-elf-g++ -c src/filesystem/VFS.cpp -o build/filesystem/VFS.o $CFLAGS
 i686-elf-g++ -c src/kterm/Shell.cpp -o build/kterm/Shell.o $CFLAGS
 i686-elf-g++ -c src/kterm/Terminal.cpp -o build/kterm/Terminal.o $CFLAGS
 
-
-i686-elf-ld -T src/linker.ld -o build/kernel.bin build/**/*.o
-#i686-elf-ld -T src/linker.ld -o build/kernel.bin build/arch/*.o build/kernel/*.o build/driver/*.o build/util/*.o build/filesystem/*.o build/kstd/*.o
+i686-elf-gcc -T src/linker.ld -o build/kernel.bin build/**/*.o $CFLAGS
