@@ -54,6 +54,15 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
 	terminal_buffer[index] = vga_entry(c, color);
 }
 
+static void move_cursor_to(unsigned int x, unsigned int y) {
+	unsigned int linear = y * VGA_WIDTH + x;
+
+	arch::outb(0x3D4, 14);
+    arch::outb(0x3D5, linear >> 8);
+    arch::outb(0x3D4, 15);
+    arch::outb(0x3D5, linear);
+}
+
 static void copy_up() {
 	for(size_t i = 0; i < VGA_HEIGHT - 1; i++) {
 		uint16_t* destLine = terminal_buffer + i*VGA_WIDTH;
@@ -102,6 +111,7 @@ static void back() {
 	  terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
 	  advance_column();
   }
+ move_cursor_to(terminal_column, terminal_row);
 }
 
 void write(const char* data, size_t size) {
