@@ -69,6 +69,7 @@ static void copy_up() {
 		uint16_t* sourceLine = terminal_buffer + (i + 1)*VGA_WIDTH;
 		kstd::memcpy(destLine, sourceLine, sizeof(uint16_t)*VGA_WIDTH);
 	}
+	kstd::memset(terminal_buffer + VGA_WIDTH*(VGA_HEIGHT -1),0,sizeof(uint16_t)*VGA_WIDTH);
 }
 
 static void advance_row() {

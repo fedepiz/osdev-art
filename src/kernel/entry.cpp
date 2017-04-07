@@ -172,9 +172,9 @@ extern "C" void kernel_main(uint32_t ebx) {
 	logf("After beheading, value is %d, length %d\n", head, list.length());
 	*/
 
-	//Creates a terminal and makes it the main input controller
-	kstd::kernel_heap.chatty_mode(true);
-	
+	//kstd::kernel_heap.chatty_mode(true);
+		
+	//Creates a terminal and makes it the main input controller	
 	kterm::Terminal terminal;
 	terminal.become_master();
 

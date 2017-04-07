@@ -113,8 +113,18 @@ namespace kterm {
         return this->inBuffer.is_empty();
     }
     
+
+    char Terminal::keyToChar(key_info_t key_info) {
+        char ch = kbdus[key_info.keycode];
+        if(key_info.shift_down) {
+            if(kstd::isalpha(ch)) ch = kstd::toupper(ch);
+            if(kstd::issymbol(ch)) ch = ch + 16;
+        }
+        return ch;
+    }
+
     char Terminal::getchar() {
-        logf("ENTERING GETCHAR\n");
+        //logf("ENTERING GETCHAR\n");
         //Block until we have input
         while(!this->hasInput()) {
             //hacky for now, but enforces the loop
@@ -122,16 +132,17 @@ namespace kterm {
         }
 
         key_info_t key_info = this->inBuffer.behead();
-        char ch = kbdus[key_info.keycode];
-        if(this->inputEcho) {
+        char ch = this->keyToChar(key_info);
+
+        if(this->inputEcho && !keyboard::key_is_special(key_info.keycode)) {
            this->putchar(ch);
         }
-        logf("LEAVING GETCHAR\n");
+        //logf("LEAVING GETCHAR\n");
         return ch;
     }
 
     string Terminal::gets() {
-        logf("ENTERING GETS\n");
+        //logf("ENTERING GETS\n");
         util::vector<char> vec;
         char c = this->getchar();
         //While not enter
@@ -142,7 +153,7 @@ namespace kterm {
         //char* c_str = util::vector_as_string(vec);
         string str;
         //delete c_str;
-        logf("LEAVING GETS\n");
+        //logf("LEAVING GETS\n");
         return str;
     }
 
@@ -159,15 +170,4 @@ namespace kterm {
             this->inBuffer.append(key_info);
         }
     }
-    /*
-    string Terminal::readLine() {
-    }
-
-    void Terminal::putLine(char* str) {
-        
-    }
-
-    void Terminal::putLine(string str) {
-        this->putLine(str.str());
-    } */
 };

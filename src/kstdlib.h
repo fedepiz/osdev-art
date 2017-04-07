@@ -31,5 +31,13 @@ void* calloc(size_t count);
 void free(void* ptr);
 void cfree(void* ptr);
 
+bool isdigit(char c);
+bool isalpha(char c);
+bool isalphadigit(char c);
+bool issymbol(char c);
+bool isvisible(char c);
+
+char toupper(char c);
+char tolower(char c);
 };
 #endif

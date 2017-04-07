@@ -29,14 +29,14 @@ namespace util {
     };
 
     template <class T> vector<T>::vector() {       
-        logf("Constructing vector of element size %d\n", sizeof(T));
+        //logf("Constructing vector of element size %d\n", sizeof(T));
         this->array = new T[VECTOR_INIITAL_SIZE];
         this->arr_size = VECTOR_INIITAL_SIZE;
         this->item_count = 0;
     }
 
     template <class T> vector<T>::~vector() {
-        logf("Destroying vector of size %d\n", this->arr_size * sizeof(T));
+        //logf("Destroying vector of size %d\n", this->arr_size * sizeof(T));
         delete this->array;
     }
 

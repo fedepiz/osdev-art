@@ -53,7 +53,7 @@ namespace util {
         while(this->head_ptr != nullptr) {
             node_t* toKill = this->head_ptr;
             this->head_ptr = this->head_ptr->next;
-                logf("Freeing node\n");
+                //logf("Freeing node\n");
             delete toKill;
         }
     }
@@ -82,7 +82,7 @@ namespace util {
     }
 
     template <class T> void list<T>::prepend(T value) {
-        logf("Allocating new node\n");
+        //logf("Allocating new node\n");
         node_t* newNode = new node_t;
         newNode->value = value;
         newNode->next = this->head_ptr;
@@ -90,7 +90,7 @@ namespace util {
     }
 
     template <class T> void list<T>::append(T value) {
-        logf("Allocating new node\n");
+        //logf("Allocating new node\n");
         node_t* newNode = new node_t;
         newNode->value = value;
         newNode->next = nullptr;
@@ -109,7 +109,7 @@ namespace util {
         T value = this->head_ptr->value;
         node_t* toKill = this->head_ptr;
         this->head_ptr = this->head_ptr->next;
-        logf("Freeing node\n");
+        //logf("Freeing node\n");
         delete toKill;
         return value;
     }

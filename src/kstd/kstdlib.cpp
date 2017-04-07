@@ -116,4 +116,38 @@ void* calloc(size_t count) {
     memset(ptr, 0, count);
     return ptr;
 }
+
+
+bool isdigit(char c) {
+    return c >='0' && c<='9';
+}
+bool isalpha(char c) {
+    return (c >= 'a' && c <= 'z') ||
+           (c >= 'A' && c <= 'Z');
+}
+bool isalphanum(char c) {
+    return isdigit(c) || isalpha(c);
+}
+
+bool issymbol(char c) {
+    return (c >= '!' && c <= '/') ||
+           (c >= ':' && c <= '@') ||
+           (c >= '[' && c <= '`') ||
+           (c >= '{' && c <= '~');
+}
+bool isvisible(char c) {
+    return isdigit(c) || isalphanum(c) || issymbol(c);
+}
+
+char toupper(char c) {
+    if (c >= 'a' && c <= 'z') {
+        return c - 32;
+    } else return c;
+}
+
+char tolower(char c) {
+    if (c >= 'A' && c <= 'Z') {
+        return c + 32;
+    } else return c;
+}
 };

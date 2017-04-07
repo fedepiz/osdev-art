@@ -26,6 +26,7 @@ namespace kterm {
         //Draws the screen on the vga_terminal, starting with a given line offset
         void flushOutBuffer();
         bool hasInput();
+        char keyToChar(keyboard::key_info_t key_info);
         public:
         Terminal();
         ~Terminal();
