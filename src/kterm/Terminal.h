@@ -30,7 +30,7 @@ namespace kterm {
         void setMode(TerminalMode mode);
         TerminalMode getMode();
         void putchar(char c);
-        void puts(char* str);
+        void puts(const char* str);
         char getchar();
         kstd::string gets();
         void become_master();

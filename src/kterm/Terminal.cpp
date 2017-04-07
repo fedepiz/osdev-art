@@ -1,6 +1,7 @@
 #include <kterm/Terminal.h>
 #include <kstdio.h>
 #include <kstdlib.h>
+#include <kernel/globals.h>
 #include <driver/vga_terminal.h>
 #include <driver/keyboard.h>
 #include <util/text.h>
@@ -56,12 +57,21 @@ namespace kterm {
         }
     }
 
+    void inputMasterWritestring(const char* str) {
+        if(inputMasterTerminal != nullptr) {
+            inputMasterTerminal->puts(str);
+        }
+    }
+
     Terminal::Terminal() : outBuffer(TERMINAL_BUFFER_SIZE), inBuffer(TERMINAL_BUFFER_SIZE) {
         this->mode = TerminalMode::RAW;
         this->inputEcho = true;
     }
 
     Terminal::~Terminal() {
+        if(inputMasterTerminal == this) {
+            inputMasterTerminal = nullptr;
+        }
     }
 
     void Terminal::setMode(TerminalMode mode) {
@@ -85,7 +95,7 @@ namespace kterm {
         }
     }
 
-    void Terminal::puts(char* str) {
+    void Terminal::puts(const char* str) {
         for(size_t i = 0; i < kstd::strlen(str);i++) {
             this->putchar(str[i]);
         }
@@ -140,6 +150,9 @@ namespace kterm {
     void Terminal::become_master() {
         inputMasterTerminal = this;
         keyboard::active_on_key_press_handler = inputMasterOnKeyPress;
+        globals* globs = get_globals();
+        globs->out_writestring = inputMasterWritestring;
+        globs->error_writestring = inputMasterWritestring;
     }
 
     void Terminal::_signal_key_pressed(unsigned char scancode) {
