@@ -52,12 +52,17 @@ namespace kterm {
 };		
 
     Terminal* inputMasterTerminal = nullptr;
+
+    //Signals to the master terminal that a key has been pressed
+    //Used to hook up keyboard drivers to the terminal
     void inputMasterOnKeyPress(keyboard::key_info_t key_info) {
         if(inputMasterTerminal != nullptr) {
             inputMasterTerminal->_signal_key_pressed(key_info);
         }
     }
 
+    //Writes to the master terminal. Main use is to pass to system-wide
+    //selectors, so that things like printf will be directed to here
     void inputMasterWritestring(const char* str) {
         if(inputMasterTerminal != nullptr) {
             inputMasterTerminal->puts(str);
@@ -67,12 +72,30 @@ namespace kterm {
     Terminal::Terminal() {
         this->mode = TerminalMode::RAW;
         this->inputEcho = true;
+        this->currentForegroundColor = defaultForegroundColor;
+        this->currentBackgroundColor = defaultBackgroundColor;
     }
 
     Terminal::~Terminal() {
         if(inputMasterTerminal == this) {
             inputMasterTerminal = nullptr;
         }
+    }
+
+    void Terminal::setForegroundColor(VGAColor col) {
+        this->currentForegroundColor = col;
+    }
+
+    void Terminal::setBackgroundColor(VGAColor col) {
+        this->currentBackgroundColor = col;
+    }
+
+    VGAColor Terminal::getForegroundColor() const {
+        return this->currentForegroundColor;
+    }
+
+    VGAColor Terminal::getBackgroundColor() const {
+        return this->currentBackgroundColor;
     }
 
     void Terminal::setMode(TerminalMode mode) {
@@ -84,9 +107,16 @@ namespace kterm {
         return this->mode;
     }
 
+    void Terminal::writechar(char c) {
+        auto fg_col = (vga_term::color)this->currentForegroundColor;
+        auto bg_col = (vga_term::color)this->currentBackgroundColor;
+        vga_term::set_color(fg_col, bg_col);
+        vga_term::putchar(c);
+    }
+
     void Terminal::putchar(char c) {
         if(this->mode == RAW) {
-            vga_term::putchar(c);
+            this->writechar(c);
         } else if(this->mode == COOKED) {
             this->outBuffer.append(c);
             //User pressed enter
@@ -105,7 +135,7 @@ namespace kterm {
     void Terminal::flushOutBuffer() {
         while(!this->outBuffer.is_empty()) {
             char c = outBuffer.behead();
-            vga_term::putchar(c);
+            this->writechar(c);
         }
     }
 
@@ -124,7 +154,6 @@ namespace kterm {
     }
 
     char Terminal::getchar() {
-        //logf("ENTERING GETCHAR\n");
         //Block until we have input
         while(!this->hasInput()) {
             //hacky for now, but enforces the loop
@@ -142,7 +171,6 @@ namespace kterm {
     }
 
     string Terminal::gets() {
-        //logf("ENTERING GETS\n");
         util::vector<char> vec;
         char c = this->getchar();
         //While not enter
@@ -158,8 +186,7 @@ namespace kterm {
         c_str[vec.size()] = '\0';
 
         string str(c_str);
-        //delete c_str;
-        //logf("LEAVING GETS\n");
+        delete c_str;
         return str;
     }
 

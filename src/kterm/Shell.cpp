@@ -8,6 +8,30 @@
 namespace kterm {
     using kstd::string;
 
+    void print_rainbow(Terminal* term, const char* ptr) {
+	uint8_t color = 0;
+	uint8_t colorbg = 6;
+    auto prevFGColor = term->getForegroundColor();
+    auto prevBGColor = term->getBackgroundColor();
+	while(*ptr != '\0') {
+		uint8_t actualColor = color;
+		uint8_t actualBgColor = colorbg;
+		if(actualColor == actualBgColor) {
+			actualColor = 15;
+			actualBgColor = 0;
+		}
+        term->setForegroundColor(static_cast<VGAColor>(actualColor));
+        term->setBackgroundColor(static_cast<VGAColor>(actualBgColor));
+		term->putchar(*ptr);
+		color++;
+		colorbg--;
+		if(color > 6) color = 0;
+		if(colorbg == 0) colorbg = 6;
+		ptr++;
+	}
+    term->setForegroundColor(prevFGColor);
+    term->setBackgroundColor(prevBGColor);
+    }
 
     Shell::Shell(Terminal* term) {
         this->term = term;
@@ -18,6 +42,8 @@ namespace kterm {
     }
 
     void Shell::mainLoop() {
+        this->term->puts("Welcome to Art 0.1a\n");
+        print_rainbow(this->term, "Beauty lies in the eye of the beholder\n");
         bool keep_going = true;
         while(keep_going) {
             string line = this->term->gets();
