@@ -1,5 +1,6 @@
 #include <kstdlib.h>
 #include <util/DynamicHeap.h>
+#include <memory/subsystem.h>
 
 namespace kstd {
 size_t strlen(const char* str) {
@@ -93,26 +94,19 @@ smallString itoa(int value, int radix) {
     return str;
 }
 
-
-util::DynamicHeap kernel_heap;
-
-void kernel_heap_initialize() {
-    util::DynamicHeap_initialize(&kernel_heap, &paging::kernel_page_allocator);
-}
-
 void* malloc(size_t count) {
-    return kernel_heap.malloc(count);
+    return memory::getKernelHeap().malloc(count);
 }
 void free(void* ptr) {
-    kernel_heap.free(ptr);
+    memory::getKernelHeap().free(ptr);
 }
 
 void cfree(void* ptr) {
-    kernel_heap.cfree(ptr);
+    memory::getKernelHeap().cfree(ptr);
 }
 
 void* calloc(size_t count) {
-    void* ptr = kernel_heap.malloc(count);
+    void* ptr = memory::getKernelHeap().malloc(count);
     memset(ptr, 0, count);
     return ptr;
 }

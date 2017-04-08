@@ -2,11 +2,9 @@
 #include <kstdlib.h>
 #include <kernel/arch.h>
 #include <kernel/globals.h>
-#include <kernel/frame_alloc.h>
-#include <kernel/paging.h>
 #include <kernel/multiboot.h>
 #include <util/StaticHeap.h>
-#include <util/DynamicHeap.h>
+#include <memory/subsystem.h>
 #include <driver/serial.h>
 #include <driver/vga_terminal.h>
 #include <driver/keyboard.h>
@@ -53,16 +51,17 @@ void initialize(uint32_t ebx) {
 	//Initialize the basic architecture parts (gdt, idt, interrupts, etc etc)
 	arch::initialize();
 	//Initialize the kernel frame allocator
-	uint32_t mem_size = mbinfo->mem_upper*1024; //1 KiB per unit
-	frame_alloc::initialize(arch::kernel_size(), mem_size);
+
+	memory::initialize(mbinfo);
+	//frame_alloc::initialize(arch::kernel_size(), mem_size);
 	//Reserve the memory of the multiboot modules
 	//(must happen before we initialize the kernel heap and start dishing out frames)
-	multiboot::reserve_modules_frames(mbinfo);
+	//multiboot::reserve_modules_frames(mbinfo);
 	//let's now get the maximum mem-higher size
 	//Initialize the paging system and kernel page allocator
-	paging::initialize();
+	//paging::initialize();
 	//Create the kernel heap
-	kstd::kernel_heap_initialize();
+	//kstd::kernel_heap_initialize();
 	//Core device drivers
 	pit::initialize(pit::DEFAULT_FREQUENCY_HZ, &pit_test);
 	keyboard::initialize();

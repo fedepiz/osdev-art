@@ -1,13 +1,14 @@
 rm -rf build
 mkdir -p build/arch
 mkdir -p build/kernel
+mkdir -p build/memory
 mkdir -p build/driver
 mkdir -p build/util
 mkdir -p build/filesystem
 mkdir -p build/kstd
 mkdir -p build/kterm
 
-export CFLAGS="-std=c++11 -nostdlib -nostartfiles -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Isrc -lgcc"
+export CFLAGS="-std=c++11 -nostdlib -nostartfiles -ffreestanding -O0 -Wall -Wextra -fno-exceptions -fno-rtti -Isrc -lgcc"
 
 nasm -felf32 src/arch/boot.s -o build/arch/boot.o
 nasm -felf32 src/arch/helpers.s -o build/arch/helpers.o
@@ -16,9 +17,12 @@ i686-elf-g++ -c src/kernel/arch.cpp -o build/kernel/arch.o $CFLAGS
 i686-elf-g++ -c src/kernel/entry.cpp -o build/kernel/entry.o $CFLAGS
 i686-elf-g++ -c src/kernel/initialize.cpp -o build/kernel/initialize.o $CFLAGS
 i686-elf-g++ -c src/kernel/globals.cpp -o build/kernel/globals.o $CFLAGS
-i686-elf-g++ -c src/kernel/paging.cpp -o build/kernel/paging.o $CFLAGS
-i686-elf-g++ -c src/kernel/frame_alloc.cpp -o build/kernel/frame_alloc.o $CFLAGS
 i686-elf-g++ -c src/kernel/multiboot.cpp -o build/kernel/multiboot.o $CFLAGS
+
+i686-elf-g++ -c src/memory/subsystem.cpp -o build/memory/subsystem.o $CFLAGS
+i686-elf-g++ -c src/memory/MAllocator.cpp -o build/memory/MAllocator.h $CFLAGS
+i686-elf-g++ -c src/memory/paging.cpp -o build/memory/paging.o $CFLAGS
+i686-elf-g++ -c src/memory/frame_alloc.cpp -o build/memory/frame_alloc.o $CFLAGS
 
 i686-elf-g++ -c src/kstd/kstdio.cpp -o build/kstd/kstdio.o $CFLAGS
 i686-elf-g++ -c src/kstd/kstdlib.cpp -o build/kstd/kstdlib.o $CFLAGS

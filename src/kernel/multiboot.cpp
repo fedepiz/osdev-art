@@ -1,6 +1,6 @@
 #include <kernel/multiboot.h>
 #include <kernel/arch.h>
-#include <kernel/frame_alloc.h>
+#include <memory/frame_alloc.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <util/text.h>
@@ -57,10 +57,10 @@ namespace multiboot {
     void reserve_module_frames(module_t* module) {
         uint32_t mod_phys_addr = module->mod_start;
         size_t mod_length = module->mod_end - module->mod_start;
-        int num_frames = frame_alloc::frames_in_range(mod_length);
-        int mod_base_frame = frame_alloc::address_to_frame_index((void*)mod_phys_addr);
+        int num_frames = memory::frames_in_range(mod_length);
+        int mod_base_frame = memory::address_to_frame_index((void*)mod_phys_addr);
         for(int i = 0; i < num_frames; i++) {
-            frame_alloc::reserve(mod_base_frame+i);
+            memory::reserve_frame(mod_base_frame+i);
         }
     }
 

@@ -48,11 +48,22 @@ namespace kterm {
     void Shell::mainLoop() {
         this->term->puts("Welcome to Art 0.1a\n");
         print_rainbow(this->term, "Beauty lies in the eye of the beholder\n");
-        
+
         bool keep_going = true;
         while(keep_going) {
             string line = this->term->gets();
+            this->processCommand(line);
             keep_going = line != string("quit");
+        }
+    }
+
+    void Shell::processCommand(string& line) {
+        logf("---INTERESTING SECTION---\n");
+        vector<string> words;
+        util::watched_ptr = (void*)words.buffer();
+        words.push_back(string("Test"));
+        for(unsigned int i = 0; i < words.size(); i++){
+            logf("%s\n", words[i].str());
         }
     }
 };

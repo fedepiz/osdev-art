@@ -19,6 +19,7 @@
 /* Macros. */
 #ifndef KERNEL_MULTIBOOT_H
 #define KERNEL_MULTIBOOT_H
+
 #include <stddef.h>
 #include <util/vector.h>
 

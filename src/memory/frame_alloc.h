@@ -1,8 +1,10 @@
 #ifndef KERNEL_FRAME_ALLOC_H
 #define KERNEL_FRAME_ALLOC_H
+
 #include <stdint.h>
 #include <stddef.h>
-namespace frame_alloc {
+
+namespace memory {
     enum frame_state {
         FREE, ALLOCATED, RESERVED, UNAVAILABLE
     };
@@ -10,11 +12,11 @@ namespace frame_alloc {
     void* frame_index_to_address(int frame);
     int frames_in_range(size_t size);
     int first_free();
-    int allocate();
-    void reserve(int frame);
-    void free(int frame);
+    int allocate_frame();
+    void reserve_frame(int frame);
+    void free_frame(int frame);
     int available();
-    void initialize(uint32_t kernel_upper_address, uint32_t memory_upper_limit);
-    void debug(bool verbose);
+    void frame_alloc_initialize(uint32_t kernel_upper_address, uint32_t memory_upper_limit);
+    void frame_alloc_debug(bool verbose);
 };
 #endif

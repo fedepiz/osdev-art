@@ -1,5 +1,6 @@
 #ifndef UTIL_HEAP_COMMON_H
 #define UTIL_HEAP_COMMON_H
+
 #include <stdint.h>
 #include <stddef.h>
 namespace util {

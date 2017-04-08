@@ -14,17 +14,20 @@ namespace util {
 
     using kstd::log;
     using util::logf;
+    using util::panicf;
     using kstd::itoa;
-    
-    void DynamicHeap::initialize(paging::page_allocator* page_allocator) {
+
+    void* watched_ptr = nullptr;
+
+    void DynamicHeap::initialize(memory::page_allocator* page_allocator) {
         this->is_chatty = false;
         this->page_allocator = page_allocator;
         //Allocate the first page
         int first_page = this->page_allocator->allocate();
-        uint8_t* first_page_address = (uint8_t*)paging::page_index_to_address(first_page);
+        uint8_t* first_page_address = (uint8_t*)memory::page_index_to_address(first_page);
         this->memory_base = first_page_address;
         //Implant the first block
-        this->head_block = makeMemoryBlock(this->memory_base, paging::BIG_PAGE_SIZE);
+        this->head_block = makeMemoryBlock(this->memory_base, memory::BIG_PAGE_SIZE);
     }
 
     heapBlockHeader* DynamicHeap::last_header() {
@@ -47,11 +50,11 @@ namespace util {
         //if the last block is free, we can simply increase it's size and
         //that's that
         if(lastBlock->isFree) {
-            lastBlock->size += paging::BIG_PAGE_SIZE;
+            lastBlock->size += memory::BIG_PAGE_SIZE;
         } else {
             //Last block is not free, make a new block and add it at the end
-            uint8_t* page_address = (uint8_t*)paging::page_index_to_address(new_page);
-            heapBlockHeader* newBlock = makeMemoryBlock(page_address, paging::BIG_PAGE_SIZE);
+            uint8_t* page_address = (uint8_t*)memory::page_index_to_address(new_page);
+            heapBlockHeader* newBlock = makeMemoryBlock(page_address, memory::BIG_PAGE_SIZE);
             lastBlock->nextBlock = newBlock;
         }
         return true;
@@ -62,9 +65,9 @@ namespace util {
         //The actual size we need to satisfy is the requested one plust the size of a new header (as potentially
         //we might need to add a new header)
         size_t totalSize = count + sizeof(heapBlockHeader);
-        int num_pages = totalSize/paging::BIG_PAGE_SIZE;
+        int num_pages = totalSize/memory::BIG_PAGE_SIZE;
         //If totalSize is not a precise multiple, we must bump it up
-        if(totalSize % paging::BIG_PAGE_SIZE != 0) num_pages++;
+        if(totalSize % memory::BIG_PAGE_SIZE != 0) num_pages++;
         //Grow the heap
         for(int i = 0; i < num_pages; i++) {
             bool success = this->grow_page();
@@ -102,13 +105,18 @@ namespace util {
     }
     
     heap_common::heapBlockHeader* DynamicHeap::_free(void* ptr) {
+        if(ptr == watched_ptr) {
+            log("Attempting to free watched pointer\n");
+        }
         heapBlockHeader* header = heap_common::blockAt(ptr);
         if(this->is_chatty) {
             log("Freeing memory block: ");
             logHeader(header);
         }
         if(header == nullptr) {
-            panic("Not a valid header block");
+            log(kstd::itoa((uint32_t)ptr,16).str);
+            this->debug();
+            panic("Not a valid header block in free");
         }
         if(header->isFree) {
             panic("Attempting to free an unallocated block");
@@ -129,7 +137,7 @@ namespace util {
         kstd::memset(ptr, 0, header->size);
     }
 
-    void DynamicHeap_initialize(DynamicHeap* heap, paging::page_allocator* allocator) {
+    void DynamicHeap_initialize(DynamicHeap* heap, memory::page_allocator* allocator) {
         heap->initialize(allocator);
     }
 

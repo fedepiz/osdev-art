@@ -1,10 +1,10 @@
-#include <kernel/paging.h>
+#include <memory/paging.h>
 #include <kernel/arch.h>
 #include <kstdio.h>
 #include <kstdlib.h>
-#include <kernel/frame_alloc.h>
+#include <memory/frame_alloc.h>
 
-namespace paging {
+namespace memory {
     using kstd::log;
     using kstd::itoa;
 
@@ -89,7 +89,7 @@ namespace paging {
             return -1;
         }
         //Ask the frame allocator for a free frame
-        int frame_index = frame_alloc::allocate();
+        int frame_index = allocate_frame();
         //Fail if no frame is there...
         if(frame_index == -1) {
             return -1;
@@ -127,8 +127,8 @@ namespace paging {
             panic("Attempting to free unused page");
         }
         //Get the index of the frame currently mapped to this page
-        int frame_index = paging::frame_of_page(page);
-        frame_alloc::free(frame_index);
+        int frame_index = frame_of_page(page);
+        free_frame(frame_index);
         //Unmap the page
         unmap_page(page);
     }
@@ -171,7 +171,7 @@ namespace paging {
         }
     }
 
-    void debug() {
+    void debugPageTable() {
         log("DEBUGGING PAGING\n");
         log("Address of boot page directory is:");
         uint32_t bootPageDirectoryAddr = (uint32_t)&BootPageDirectory;
@@ -200,7 +200,7 @@ namespace paging {
         }
     }
 
-    void initialize() {
+    void paging_initialize() {
         //The initial page is the boot page directory
         page_directory = (uint32_t*)&BootPageDirectory;
         //4MB identity page the kernel

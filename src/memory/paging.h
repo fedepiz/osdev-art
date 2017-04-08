@@ -5,7 +5,7 @@
 
 extern "C" void BootPageDirectory();//Dummy extern symbol, not a real function
 
-namespace paging {
+namespace memory {
     const size_t BIG_PAGE_SIZE = 0x400000;
 
 
@@ -20,8 +20,8 @@ namespace paging {
     bool page_is_mapped(int pageIndex);
     int frame_of_page(int pageIndex);
     
-    void debug();
-    void initialize();
+    void debugPageTable();
+    void paging_initialize();
 
 
     struct page_allocator {

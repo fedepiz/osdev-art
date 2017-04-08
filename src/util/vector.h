@@ -106,6 +106,9 @@ namespace util {
     }
 
     template <class T> void vector<T>::clear() {
+        for(int i = 0; i < this->size(); i++) {
+            this->array[i].~T();
+        }
         kstd::memset(this->array, 0, sizeof(T)*arr_size);
         this->item_count = 0;
     }
@@ -114,9 +117,12 @@ namespace util {
         this->arr_size = other->arr_size;
         this->item_count = other->item_count;
         this->array = new T[arr_size];
-        kstd::memcpy(this->array, other->array, this->item_count*sizeof(T));
+        for(unsigned int i = 0; i < other.size(); i++) {
+            this->array[i] = other.array[i];
+        }
         return *this;
     }
 
 };
+
 #endif

@@ -5,6 +5,7 @@
 namespace kstd {
     using util::logf;
     using util::vector;
+
     string::string() {
         //logf("Allocating string\n");
         this->buffer = new char[1];
@@ -45,10 +46,12 @@ namespace kstd {
 
     string::~string() {
         //logf("Freeing string\n");
+        logf("Deleting string, buffer address %x\n", (uint32_t)this->buffer);
         delete this->buffer;
     }
     string& string::operator=(const string& other) {
         this->length = other.length;
+        delete this->buffer;
         this->buffer = new char[this->length+1];
         kstd::memcpy(this->buffer, other.buffer, this->length+1);
         return *this;
@@ -91,7 +94,6 @@ namespace kstd {
         vector<char> accum;
         bool metSep = false;
         unsigned int pos = 0;
-
         while(pos < this->length) {
             //Read in the character
             char ch = this->operator[](pos);

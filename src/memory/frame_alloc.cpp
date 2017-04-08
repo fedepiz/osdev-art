@@ -1,9 +1,9 @@
 #include <kstdio.h>
 #include <kstdlib.h>
-#include <kernel/frame_alloc.h>
-#include <kernel/paging.h>
+#include <memory/frame_alloc.h>
+#include <memory/paging.h>
 
-namespace frame_alloc {
+namespace memory {
     #define FRAME_SIZE 0x400000
     #define NUM_FRAMES 1024
 
@@ -32,7 +32,7 @@ namespace frame_alloc {
         return -1;
     }
 
-    int allocate() {
+    int allocate_frame() {
         int index = first_free();
         if(index == -1) {
             return -1;
@@ -41,7 +41,7 @@ namespace frame_alloc {
         return index;
     }
 
-    void reserve(int index) {
+    void reserve_frame(int index) {
         if(frame_array[index] == frame_state::ALLOCATED) {
             panic("Attempting to reserve already allocated frame");
         }
@@ -53,7 +53,7 @@ namespace frame_alloc {
         frame_array[index] = frame_state::RESERVED;
     }
 
-    void free(int index) {
+    void free_frame(int index) {
         //If the frame is already free...
         if(frame_array[index] == frame_state::FREE) {
             panic("Cannot free already free frame");
@@ -117,7 +117,7 @@ namespace frame_alloc {
         kstd::log("\n");
     }
 
-    void debug(bool verbose) {
+    void frame_alloc_debug(bool verbose) {
         frame_allocator_count count = count_frames();
         kstd::log("DEBUGGING FRAME ALLOCATOR\n");
         kstd::log("Free: ");
@@ -137,7 +137,7 @@ namespace frame_alloc {
 
 
 
-    void initialize(uint32_t kenrel_upper_address, uint32_t upper_mem_limit) {
+    void frame_alloc_initialize(uint32_t kenrel_upper_address, uint32_t upper_mem_limit) {
         //Kernel is physically allocated at 0, reserve that amount of frames
         int kernel_frame_count = frames_in_range(kenrel_upper_address);
         int mem_max_index = frames_in_range(upper_mem_limit);
