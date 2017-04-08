@@ -16,17 +16,17 @@ namespace memory {
 
     }
 
-    class A {
-        public:
-        virtual void doIt() = 0;
-    };
+    void kernelAllocSetNextTag(const char* tag) {
+        getKernelHeap()->setNextTag((char*)tag);
+    }
 
-    class B : public A {
-        public:
-        virtual void doIt() {
-            logf("***RUNNED***\n");
-        }
-    };
+    void kernelHeapLogState() {
+        getKernelHeap()->log_state();
+    }
+
+    void kernelHeapLogEntry(const void* ptr) {
+        getKernelHeap()->log_entry(ptr);
+    }
 
     void kernel_heap_initialize() {
         kernel_heap = (MemoryAllocator*)kernel_heap_buffer;
@@ -40,9 +40,5 @@ namespace memory {
             multiboot::reserve_modules_frames(mbinfo);
             paging_initialize();    
             kernel_heap_initialize();
-            kernel_heap->log_state();
-            for(;;) {
-
-            }
     }
 };

@@ -148,6 +148,9 @@ namespace util {
         va_list args;
         va_start(args, fmt);
         implace_format(&kstd::puterrch, fmt, args);
+        for(;;){
+            
+        }
         va_end(args);
 
         //panic(str);

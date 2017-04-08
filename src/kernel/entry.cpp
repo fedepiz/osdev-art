@@ -17,10 +17,10 @@ extern "C" void kernel_main(uint32_t ebx) {
 	//kstd::kernel_heap.chatty_mode(true);
 		
 	//Creates a terminal and makes it the main input controller	
-	kterm::Terminal terminal;
-	terminal.become_master();
+	//kterm::Terminal terminal;
+	//terminal.become_master();
 
-	kterm::Shell shell(&terminal);
+	kterm::Shell shell(nullptr);
 	shell.mainLoop();
 	hang();
 }

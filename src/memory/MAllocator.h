@@ -49,6 +49,7 @@ namespace memory {
         virtual void free(void* ptr);
         virtual void setNextTag(char* tag);
         virtual void log_state();
+        virtual void log_entry(const void* ptr);
     };
 };
 

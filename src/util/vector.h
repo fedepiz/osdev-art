@@ -5,6 +5,7 @@
 #include <kstdlib.h>
 #include <stddef.h>
 #include <util/text.h>
+#include <memory/debug.h>
 
 namespace util {
     const size_t VECTOR_INIITAL_SIZE = 50;
@@ -31,7 +32,10 @@ namespace util {
 
     template <class T> vector<T>::vector() {       
         //logf("Constructing vector of element size %d\n", sizeof(T));
+        memory::kernelAllocSetNextTag("VINT");
         this->array = new T[VECTOR_INIITAL_SIZE];
+        logf("---");
+        memory::kernelHeapLogEntry(this->array);
         this->arr_size = VECTOR_INIITAL_SIZE;
         this->item_count = 0;
     }
@@ -43,6 +47,7 @@ namespace util {
 
     template <class T> void vector<T>::grow() {
             size_t newSize = 2*this->arr_size;
+            memory::kernelAllocSetNextTag("VGRW");
             T* newArray = new T[newSize];
             for(size_t i = 0; i < this->arr_size;i++) {
                 newArray[i] = array[i];
@@ -116,6 +121,7 @@ namespace util {
     template <class T> vector<T>& vector<T>::operator=(const vector& other) {
         this->arr_size = other->arr_size;
         this->item_count = other->item_count;
+        memory::kernelAllocSetNextTag("VCPY");
         this->array = new T[arr_size];
         for(unsigned int i = 0; i < other.size(); i++) {
             this->array[i] = other.array[i];

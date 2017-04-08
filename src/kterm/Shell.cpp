@@ -5,7 +5,7 @@
 #include <kstdio.h>
 #include <kstdlib.h>
 #include <util/text.h>
-
+#include <memory/debug.h>
 namespace kterm {
     using kstd::string;
     using util::vector;
@@ -46,24 +46,35 @@ namespace kterm {
     }
 
     void Shell::mainLoop() {
-        this->term->puts("Welcome to Art 0.1a\n");
-        print_rainbow(this->term, "Beauty lies in the eye of the beholder\n");
+        //this->term->puts("Welcome to Art 0.1a\n");
+        //print_rainbow(this->term, "Beauty lies in the eye of the beholder\n");
 
         bool keep_going = true;
+        memory::kernelHeapLogState();
         while(keep_going) {
-            string line = this->term->gets();
-            this->processCommand(line);
-            keep_going = line != string("quit");
+            //string line = this->term->gets();
+            this->processCommand();
+            //keep_going = line != string("quit");
+            keep_going = false;
         }
     }
 
-    void Shell::processCommand(string& line) {
+    template <class T> void testWithTemplate() {
+        memory::kernelAllocSetNextTag("TARR");
+        T* buffer = new T[1];
+        logf("T buffer address is %x\n", (uint32_t)buffer);
+        logf("T size is %d\n", sizeof(T));
+        logf("T array size is %d\n", sizeof(buffer));
+        memory::kernelHeapLogEntry(buffer);
+    }
+
+
+    void Shell::processCommand() {
         logf("---INTERESTING SECTION---\n");
-        vector<string> words;
-        util::watched_ptr = (void*)words.buffer();
-        words.push_back(string("Test"));
-        for(unsigned int i = 0; i < words.size(); i++){
-            logf("%s\n", words[i].str());
-        }
+        //vector<string> words;
+        //const string* buffer = words.buffer();
+        testWithTemplate<string>();
+        //logf("The vector inner buffer is at address %x\n", (uint32_t)buffer);
+        //words.push_back(string("Test"));
     }
 };

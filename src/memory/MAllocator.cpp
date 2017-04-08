@@ -1,6 +1,7 @@
 #include <memory/MAllocator.h>
 #include <kstdlib.h>
 #include <util/text.h>
+#include <memory/subsystem.h>
 
 namespace memory {
     using util::panicf;
@@ -23,8 +24,9 @@ namespace memory {
 
     void MAllocator::header::check() {
         if(this->magic != 0xFEDE) {
-            panicf("Not a valid block, address = %x data = %x, magic = %x\n",
-                (uint32_t)this, (uint32_t)this->dataPtr(), this->magic
+            getKernelHeap()->log_state();
+            panicf("Not a valid block\naddress = %x data = %x, size = %d b, magic = %x, tag = [%s] free = %b\n",
+                (uint32_t)this, (uint32_t)this->dataPtr(), this->dataSize, this->magic, this->info, this->free
             );
         }
     }
@@ -52,7 +54,7 @@ namespace memory {
              }
              kstd::memcpy(header_ptr->infoPtr(), infoPtr, kstd::strlen(infoPtr)+1);
          } else {
-             kstd::memcpy(header_ptr->infoPtr(), "", 1);
+             kstd::memset(header_ptr->infoPtr(), 0, HEADER_INFO_SIZE);
          }
          //TODO? Some safety check to make sure we are not overrunning another block?
          //Done
@@ -154,7 +156,6 @@ namespace memory {
     }
 
     void* MAllocator::malloc(size_t size) {
-        logf("Malloc called\n");
         if(this->memory_base == nullptr) {
             panicf("Attempting to allocate via unitialized allocator\n");
         }
@@ -178,25 +179,35 @@ namespace memory {
             //Generate the new block
             auto newHeaderPointer = hdr->dataPtr() + splitSize;
             
-            char* info = nullptr;
-            if(this->tagSet) {
-                this->tagSet = false;
-                info = this->nextTag;
-            }
-            this->makeBlock(newHeaderPointer - this->memory_base, info, remainderSize - sizeof(header));
+        
+            this->makeBlock(newHeaderPointer - this->memory_base, nullptr, remainderSize - sizeof(header));
         }
         //Set as used
         hdr->free = false;
+        if(this->tagSet) {
+                this->tagSet = false;
+                //TODO: DANGER DANGER - this is unchecked!
+                kstd::memcpy(hdr->info, this->nextTag, kstd::strlen(this->nextTag)+1);
+        }
         //Return the pointer to the hdr data
+        logf("At the end of malloc, we have allocated the following block\n");
+        this->log_entry(hdr->dataPtr());
+        logf("\n");
         return hdr->dataPtr();
     }
 
 
-    void MAllocator::free(void* ptr){
+    void MAllocator::free(void* ptr) {
+        logf("Free called, debug begin:\n");
+        this->log_entry(ptr);
+        logf("Debug end\n");
+
         //The the block's header
         uint8_t* header_ptr = ((uint8_t*)(ptr)) - sizeof(header);
         header* hdr = (header*)header_ptr;
         hdr->free = true;
+        //Remove the tag
+        kstd::memset(hdr->info, 0, HEADER_INFO_SIZE);
         //Try to merge the header!
         this->tryMerge(hdr);
     }
@@ -222,7 +233,7 @@ namespace memory {
         this->memory_base = (uint8_t*)(page_index_to_address(firstPage));
         this->memory_size = BIG_PAGE_SIZE - sizeof(header);
         this->tagSet = false;
-        this->makeBlock(0, "", this->memory_size - sizeof(header));
+        this->makeBlock(0, nullptr, this->memory_size - sizeof(header));
     }
 
     void MAllocator::log_state() {
@@ -237,5 +248,11 @@ namespace memory {
                 (uint32_t)hdr, (uint32_t)hdr->dataPtr(), hdr->dataSize,  hdr->free, hdr->info);
             hdr = this->nextHeader(hdr);
         }
+    }
+
+    void MAllocator::log_entry(const void* ptr) {
+        header* hdr =  (header*)(((uint8_t*)ptr) - sizeof(header));
+        logf("Header address = %x, data address = %x, data size = %d B, free = %b tag = [%s]\n",
+                (uint32_t)hdr, (uint32_t)hdr->dataPtr(), hdr->dataSize,  hdr->free, hdr->info);
     }
 };
