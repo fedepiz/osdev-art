@@ -154,6 +154,10 @@ namespace memory {
     }
 
     void* MAllocator::malloc(size_t size) {
+        logf("Malloc called\n");
+        if(this->memory_base == nullptr) {
+            panicf("Attempting to allocate via unitialized allocator\n");
+        }
         //Try to get a free header of the required size
         header* hdr = this->findFree(size);
         //If we failed, ask for enough new pages and try again
@@ -173,7 +177,13 @@ namespace memory {
             hdr->dataSize = splitSize;
             //Generate the new block
             auto newHeaderPointer = hdr->dataPtr() + splitSize;
-            this->makeBlock(newHeaderPointer - this->memory_base, nullptr, remainderSize - sizeof(header));
+            
+            char* info = nullptr;
+            if(this->tagSet) {
+                this->tagSet = false;
+                info = this->nextTag;
+            }
+            this->makeBlock(newHeaderPointer - this->memory_base, info, remainderSize - sizeof(header));
         }
         //Set as used
         hdr->free = false;
@@ -190,12 +200,28 @@ namespace memory {
         //Try to merge the header!
         this->tryMerge(hdr);
     }
+
+    void MAllocator::setNextTag(char* tag) {
+        int len = kstd::strlen(tag);
+        if(len + 1 > HEADER_INFO_SIZE) {
+            panicf("MAllocator - invalid tag - tag too long\n");
+        }
+        kstd::memcpy(this->nextTag, tag, len+1);
+        this->tagSet = true;
+    }
+
+    MAllocator::MAllocator() {
+        this->pg_allocator = nullptr;
+        this->memory_base = nullptr;
+        this->memory_size = 0;
+    }
     
     MAllocator::MAllocator(page_allocator* pg_alloc) {
         this->pg_allocator = pg_alloc;
         int firstPage = this->pg_allocator->allocate();
         this->memory_base = (uint8_t*)(page_index_to_address(firstPage));
         this->memory_size = BIG_PAGE_SIZE - sizeof(header);
+        this->tagSet = false;
         this->makeBlock(0, "", this->memory_size - sizeof(header));
     }
 

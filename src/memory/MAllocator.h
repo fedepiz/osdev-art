@@ -8,7 +8,7 @@
 
 namespace memory {
 
-    class MAllocator : MemoryAllocator {
+    class MAllocator : public MemoryAllocator {
         private:
         static const int HEADER_INFO_SIZE = 5;
         struct header {
@@ -30,6 +30,9 @@ namespace memory {
         uint8_t* memory_base;
         //Upper size of the managed region
         size_t memory_size;
+        //Next tag to apply
+        char nextTag[HEADER_INFO_SIZE];
+        bool tagSet;
 
         uint8_t* memoryLimit();
         
@@ -40,10 +43,12 @@ namespace memory {
         header* findFree(size_t size);
         header* grow(size_t size);
         public:
+        MAllocator();
         MAllocator(page_allocator* pg_alloc);
         virtual void* malloc(size_t size);
         virtual void free(void* ptr);
-        void log_state();
+        virtual void setNextTag(char* tag);
+        virtual void log_state();
     };
 };
 
