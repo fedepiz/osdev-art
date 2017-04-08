@@ -53,16 +53,6 @@ void initialize(uint32_t ebx) {
 	//Initialize the kernel frame allocator
 
 	memory::initialize(mbinfo);
-	//frame_alloc::initialize(arch::kernel_size(), mem_size);
-	//Reserve the memory of the multiboot modules
-	//(must happen before we initialize the kernel heap and start dishing out frames)
-	//multiboot::reserve_modules_frames(mbinfo);
-	//let's now get the maximum mem-higher size
-	//Initialize the paging system and kernel page allocator
-	//paging::initialize();
-	//Create the kernel heap
-	//kstd::kernel_heap_initialize();
-	//Core device drivers
 	pit::initialize(pit::DEFAULT_FREQUENCY_HZ, &pit_test);
 	keyboard::initialize();
 

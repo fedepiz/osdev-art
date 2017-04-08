@@ -24,7 +24,6 @@ namespace memory {
 
     void MAllocator::header::check() {
         if(this->magic != 0xFEDE) {
-            getKernelHeap()->log_state();
             panicf("Not a valid block\naddress = %x data = %x, size = %d b, magic = %x, tag = [%s] free = %b\n",
                 (uint32_t)this, (uint32_t)this->dataPtr(), this->dataSize, this->magic, this->info, this->free
             );
@@ -156,6 +155,7 @@ namespace memory {
     }
 
     void* MAllocator::malloc(size_t size) {
+        //logf("Requested size %x\n", size);
         if(this->memory_base == nullptr) {
             panicf("Attempting to allocate via unitialized allocator\n");
         }
@@ -190,17 +190,16 @@ namespace memory {
                 kstd::memcpy(hdr->info, this->nextTag, kstd::strlen(this->nextTag)+1);
         }
         //Return the pointer to the hdr data
-        logf("At the end of malloc, we have allocated the following block\n");
-        this->log_state();
-        logf("\n");
+        //logf("At the end of malloc, we have allocated the following block\n");
+        //logf("\n");
         return hdr->dataPtr();
     }
 
 
     void MAllocator::free(void* ptr) {
-        logf("Free called, debug begin:\n");
-        this->log_entry(ptr);
-        logf("Debug end\n");
+        //logf("Free called, debug begin:\n");
+        //this->log_entry(ptr);
+        //logf("Debug end\n");
 
         //The the block's header
         uint8_t* header_ptr = ((uint8_t*)(ptr)) - sizeof(header);

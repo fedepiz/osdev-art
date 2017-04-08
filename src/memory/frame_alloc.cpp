@@ -32,6 +32,10 @@ namespace memory {
         return -1;
     }
 
+    frame_state state_of_frame(int frame) {
+        return frame_array[frame];
+    }
+
     int allocate_frame() {
         int index = first_free();
         if(index == -1) {
