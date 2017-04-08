@@ -20,6 +20,7 @@ namespace util {
         vector();
         ~vector();
         void push_back(const T& val);
+        const T* buffer() const;
         T& operator[](int index);
         T get(int index) const;
         vector<T>& operator=(const vector& other);
@@ -49,6 +50,10 @@ namespace util {
             delete array;
             this->array = newArray;
             this->arr_size = newSize;
+    }
+
+    template <class T> const T* vector<T>::buffer() const {
+        return this->array;
     }
 
     template <class T> void vector<T>::push_back(const T& val) {

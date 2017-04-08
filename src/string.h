@@ -1,6 +1,8 @@
 #ifndef KERNEL_STRING_H
 #define KERNEL_STRING_H
+
 #include <stddef.h>
+#include <util/vector.h>
 namespace kstd {
    class string {
         private:
@@ -9,7 +11,9 @@ namespace kstd {
         public:
         string();
         string(const char* str);
+        string(const char* str, unsigned int count);
         string(const string& other);
+        string(const util::vector<char>& vec);
         ~string();
         string& operator=(const string& other);
         unsigned int size() const;
@@ -18,6 +22,7 @@ namespace kstd {
         bool operator!=(const string& other) const;
         static bool compare(const string& s1, const string& s2);
         const char* str() const;
+        util::vector<string> split(char sep, bool repsep) const;
     };
 };
 #endif

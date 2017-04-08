@@ -4,6 +4,7 @@
 #include <util/text.h>
 namespace kstd {
     using util::logf;
+    using util::vector;
     string::string() {
         //logf("Allocating string\n");
         this->buffer = new char[1];
@@ -17,12 +18,30 @@ namespace kstd {
         this->length = len-1;
         kstd::memcpy(this->buffer, str, len);
     }
+
+    string::string(const char* str, unsigned int count) {
+        size_t len = count+1;
+        this->buffer = new char[len];
+        this->length = count;
+        kstd::memcpy(this->buffer, str, count);
+        //Null terminate the string
+        this->buffer[count] = '\0';
+    }
+
     string::string(const string& other) {
         //logf("Allocating string\n");
         this->length = other.length;
         this->buffer = new char[this->length+1];
         kstd::memcpy(this->buffer, other.buffer, this->length+1);
     }
+
+    string::string(const vector<char>& vec) {
+        this->length = vec.size();
+        this->buffer = new char[this->length+1];
+        kstd::memcpy(this->buffer, vec.buffer(), this->length);
+        this->buffer[this->length+1] = '\0';
+    }
+
 
     string::~string() {
         //logf("Freeing string\n");
@@ -64,5 +83,41 @@ namespace kstd {
 
     bool string::operator!=(const string& other) const {
         return !(*this == other);
+    }
+
+
+    vector<string> string::split(char sep, bool repsep) const {
+        vector<string> string_vector;
+        vector<char> accum;
+        bool metSep = false;
+        unsigned int pos = 0;
+
+        while(pos < this->length) {
+            //Read in the character
+            char ch = this->operator[](pos);
+            //Is it a separator?
+            if(ch == sep) {
+                //Yes
+                if(repsep && metSep) {
+                    //If we have repsep on and we previously met a separator, skip
+                } else {
+                    //Otherwise, make a string of the segment
+                    string str(accum);
+                    string_vector.push_back(str);
+                    accum.clear();
+                    metSep = true;
+                }
+            } else {
+                //No separator, simply add to the accumulator
+                metSep = false;
+                accum.push_back(ch);
+            }
+            pos++;
+        }
+        //If we have anything left, we need to account for that as well
+        if(accum.size() > 0) {
+            string_vector.push_back(string(accum));
+        }
+        return string_vector;
     }
 };

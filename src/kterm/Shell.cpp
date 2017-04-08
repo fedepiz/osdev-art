@@ -1,12 +1,16 @@
 #include <kterm/Shell.h>
 #include <kterm/Terminal.h>
 #include <string.h>
+#include <util/vector.h>
 #include <kstdio.h>
 #include <kstdlib.h>
 #include <util/text.h>
 
 namespace kterm {
     using kstd::string;
+    using util::vector;
+    using util::logf;
+    using util::printf;
 
     void print_rainbow(Terminal* term, const char* ptr) {
 	uint8_t color = 0;
@@ -44,6 +48,7 @@ namespace kterm {
     void Shell::mainLoop() {
         this->term->puts("Welcome to Art 0.1a\n");
         print_rainbow(this->term, "Beauty lies in the eye of the beholder\n");
+        
         bool keep_going = true;
         while(keep_going) {
             string line = this->term->gets();

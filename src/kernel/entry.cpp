@@ -2,7 +2,6 @@
 #include <kterm/Shell.h>
 #include <util/text.h>
 #include <kernel/initialize.h>
-#include <driver/vga_terminal.h>
 
 using util::logf;
 
@@ -12,9 +11,6 @@ void hang() {
 
 	}
 }
-
-
-
 
 extern "C" void kernel_main(uint32_t ebx) {
 	initialize(ebx);
