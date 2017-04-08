@@ -191,7 +191,7 @@ namespace memory {
         }
         //Return the pointer to the hdr data
         logf("At the end of malloc, we have allocated the following block\n");
-        this->log_entry(hdr->dataPtr());
+        this->log_state();
         logf("\n");
         return hdr->dataPtr();
     }
@@ -237,7 +237,6 @@ namespace memory {
     }
 
     void MAllocator::log_state() {
-        logf("Header size is %x\n", sizeof(header));
         logf("--MAllocator DEBUG START--\n");
         logf("Memory base = %x, Memory size = %d bytes, memory end = %x\n", 
         this->memory_base, this->memory_size, sizeof(header) + this->memory_base + this->memory_size);

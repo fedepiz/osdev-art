@@ -1,8 +1,11 @@
 #include <kstdlib.h>
 #include <memory/MemoryAllocator.h>
 #include <memory/subsystem.h>
+#include <util/text.h>
 
 namespace kstd {
+    using util::logf;
+
 size_t strlen(const char* str) {
 	size_t len = 0;
 	while (str[len])
@@ -92,23 +95,6 @@ smallString itoa(int value, int radix) {
     memset(str.str, 0, SMALL_STRING_SIZE);
     itoa(value, str.str, radix);
     return str;
-}
-
-void* malloc(size_t count) {
-    return memory::getKernelHeap()->malloc(count);
-}
-void free(void* ptr) {
-    memory::getKernelHeap()->free(ptr);
-}
-
-void cfree(void* ptr) {
-    memory::getKernelHeap()->free(ptr);
-}
-
-void* calloc(size_t count) {
-    void* ptr = memory::getKernelHeap()->malloc(count);
-    memset(ptr, 0, count);
-    return ptr;
 }
 
 

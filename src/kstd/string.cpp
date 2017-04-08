@@ -2,14 +2,13 @@
 #include <kstdlib.h>
 #include <kstdio.h>
 #include <util/text.h>
-#include <memory/subsystem.h>
+
 namespace kstd {
     using util::logf;
     using util::vector;
 
     string::string() {
         //logf("Allocating string\n");
-        memory::getKernelHeap()->setNextTag("S1");
         this->buffer = new char[1];
         this->buffer[0] = '\0';
         this->length = 0;
@@ -17,7 +16,6 @@ namespace kstd {
     string::string(const char* str) {
         //logf("Allocating string\n");
         size_t len = strlen(str)+1;
-        memory::getKernelHeap()->setNextTag("S2");
         this->buffer = new char[len];
         this->length = len-1;
         kstd::memcpy(this->buffer, str, len);
@@ -25,7 +23,6 @@ namespace kstd {
 
     string::string(const char* str, unsigned int count) {
         size_t len = count+1;
-        memory::getKernelHeap()->setNextTag("S3");
         this->buffer = new char[len];
         this->length = count;
         kstd::memcpy(this->buffer, str, count);
@@ -36,14 +33,12 @@ namespace kstd {
     string::string(const string& other) {
         //logf("Allocating string\n");
         this->length = other.length;
-        memory::getKernelHeap()->setNextTag("S4");
         this->buffer = new char[this->length+1];
         kstd::memcpy(this->buffer, other.buffer, this->length+1);
     }
 
     string::string(const vector<char>& vec) {
         this->length = vec.size();
-        memory::getKernelHeap()->setNextTag("SVEC");
         this->buffer = new char[this->length+1];
         kstd::memcpy(this->buffer, vec.buffer(), this->length);
         this->buffer[this->length+1] = '\0';
@@ -58,7 +53,6 @@ namespace kstd {
     string& string::operator=(const string& other) {
         this->length = other.length;
         delete this->buffer;
-        memory::getKernelHeap()->setNextTag("SCPY");
         this->buffer = new char[this->length+1];
         kstd::memcpy(this->buffer, other.buffer, this->length+1);
         return *this;

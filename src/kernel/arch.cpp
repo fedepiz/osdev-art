@@ -1,7 +1,9 @@
 #include <kernel/arch.h>
 #include <kstdio.h>
 #include <kstdlib.h>
+#include <util/text.h>
 namespace arch {
+using util::logf;
 size_t kernel_size() {
     uint32_t kernelStart = (uint32_t)&kernel_start;
     uint32_t kernelEnd = (uint32_t)&kernel_end;
@@ -206,6 +208,12 @@ const char* exception_messages[] = {
 };
 
 extern "C" void fault_handler(struct regs *r) {
+    if(r->int_no == 14){
+        logf("Page fault!\n");
+        for(;;){
+
+        }
+    }
     if(r->int_no < 32) {
         kstd::puterr("Exception!!");
     }

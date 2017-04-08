@@ -38,7 +38,8 @@ namespace memory {
             uint32_t mem_size = mbinfo->mem_upper*1024; //1 KiB per unit
             frame_alloc_initialize(arch::kernel_size(), mem_size);
             multiboot::reserve_modules_frames(mbinfo);
-            paging_initialize();    
+            paging_initialize();  
+            //Kernel heap is temporarily replaced by liballoc
             kernel_heap_initialize();
     }
 };

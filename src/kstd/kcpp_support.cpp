@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <kstdlib.h>
 #include <kstdio.h>
+#include <memory/subsystem.h>
 #include <util/text.h>
 
 extern "C" void __cxa_pure_virtual() {
@@ -8,18 +9,19 @@ extern "C" void __cxa_pure_virtual() {
 }
 
 void *operator new(size_t size) {
-    return kstd::calloc(size);
+    return memory::getKernelHeap()->malloc(size);
 }
+
  
 void *operator new[](size_t size) {
-    return kstd::calloc(size);
+    return  memory::getKernelHeap()->malloc(size);
 }
  
 void operator delete(void *p) {
-    kstd::free(p);
+     memory::getKernelHeap()->free(p);
 }
  
 void operator delete[](void *p) {
-    kstd::free(p);
+     memory::getKernelHeap()->free(p);
 }
 
