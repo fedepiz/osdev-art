@@ -14,6 +14,7 @@ nasm -felf32 src/arch/helpers.s -o build/arch/helpers.o
 
 i686-elf-g++ -c src/kernel/arch.cpp -o build/kernel/arch.o $CFLAGS
 i686-elf-g++ -c src/kernel/entry.cpp -o build/kernel/entry.o $CFLAGS
+i686-elf-g++ -c src/kernel/initialize.cpp -o build/kernel/initialize.o $CFLAGS
 i686-elf-g++ -c src/kernel/globals.cpp -o build/kernel/globals.o $CFLAGS
 i686-elf-g++ -c src/kernel/paging.cpp -o build/kernel/paging.o $CFLAGS
 i686-elf-g++ -c src/kernel/frame_alloc.cpp -o build/kernel/frame_alloc.o $CFLAGS
