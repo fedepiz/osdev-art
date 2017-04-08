@@ -20,7 +20,7 @@ i686-elf-g++ -c src/kernel/globals.cpp -o build/kernel/globals.o $CFLAGS
 i686-elf-g++ -c src/kernel/multiboot.cpp -o build/kernel/multiboot.o $CFLAGS
 
 i686-elf-g++ -c src/memory/subsystem.cpp -o build/memory/subsystem.o $CFLAGS
-i686-elf-g++ -c src/memory/MAllocator.cpp -o build/memory/MAllocator.h $CFLAGS
+i686-elf-g++ -c src/memory/MAllocator.cpp -o build/memory/MAllocator.o $CFLAGS
 i686-elf-g++ -c src/memory/paging.cpp -o build/memory/paging.o $CFLAGS
 i686-elf-g++ -c src/memory/frame_alloc.cpp -o build/memory/frame_alloc.o $CFLAGS
 

@@ -6,53 +6,55 @@ namespace memory {
     using util::panicf;
     using util::logf;
 
+    const size_t MALLOCATOR_MIN_BLOCK_SIZE = 32;
+
     size_t MAllocator::header::totalSize() {
-        return this->infoSize + this->dataSize;
+        return this->dataSize;
     }
 
-    uint8_t* MAllocator::header::infoPtr() {
-        auto this_ptr = (uint8_t*)this;
-        return this_ptr + sizeof(header);
+    char* MAllocator::header::infoPtr() {
+        return this->info;
     }
 
     uint8_t* MAllocator::header::dataPtr() {
         auto this_ptr = (uint8_t*)this;
-        return this_ptr + sizeof(header) + this->infoSize;
+        return this_ptr + sizeof(header);
     }
 
     void MAllocator::header::check() {
         if(this->magic != 0xFEDE) {
-            panicf(
-                "MAllocator header at address %x (data address %x), has invalid magic number %x",
+            panicf("Not a valid block, address = %x data = %x, magic = %x\n",
                 (uint32_t)this, (uint32_t)this->dataPtr(), this->magic
             );
         }
     }
 
     void MAllocator::header::carpet_with(uint8_t value) {
-        kstd::memset(this, value, sizeof(header) + this->totalSize());
+        auto ptr = (uint8_t*)this + sizeof(header);
+        auto length = this->totalSize();
+        kstd::memset(ptr, value, length);
     }
 
-    MAllocator::header* MAllocator::makeBlock(size_t offset, size_t infoSize, uint8_t* infoPtr, size_t dataSize) {
+    MAllocator::header* MAllocator::makeBlock(size_t offset, char* infoPtr, size_t dataSize) {
         //Compute the actual buffer
         uint8_t* buffer = this->memory_base + offset;
          //The header goes right at the start
          header* header_ptr = (header*)buffer;
-         //Then goes the info section
-         uint8_t* info_buffer = header_ptr->infoPtr();
-         //finally, we want the pointer to the data, so
-         uint8_t* data_buffer = header_ptr->dataPtr();
 
          //Populate the header information
          header_ptr->magic = 0xFEDE;
-         header_ptr->infoSize = infoSize;
          header_ptr->dataSize = dataSize;
          header_ptr->free = true;
          //Copy the information into the info region
-         kstd::memcpy(info_buffer, infoPtr, infoSize);
-
+         if(infoPtr != nullptr) {
+             if((kstd::strlen(infoPtr)+1) > MAllocator::HEADER_INFO_SIZE) {
+                 panicf("Info too long!");
+             }
+             kstd::memcpy(header_ptr->infoPtr(), infoPtr, kstd::strlen(infoPtr)+1);
+         } else {
+             kstd::memcpy(header_ptr->infoPtr(), "", 1);
+         }
          //TODO? Some safety check to make sure we are not overrunning another block?
-         (void)data_buffer;
          //Done
          return header_ptr;
     }
@@ -124,16 +126,90 @@ namespace memory {
         return nullptr;
     }
 
+    MAllocator::header* MAllocator::grow(size_t size) {
+        //Figure out how many pages are needed.
+            size_t numPages = size/memory::BIG_PAGE_SIZE;
+            if(size % memory::BIG_PAGE_SIZE != 0) {
+                numPages++;
+            }
+            //Allocated them -and they need to be contiguous!
+            int prev = -1;
+            int curr = -1;
+            for(size_t i = 0; i < numPages; i++) {
+                curr = this->pg_allocator->allocate();
+                //If we have already seen a previous, and the previous is less then the current - 1
+                //(not adjacent)
+                if(i != 0 && prev != curr - 1) {
+                    panicf("MAllocator failed - page allocator returned non-contiguous pages");
+                }
+            }
+            //Grow the heap by the allocated size
+            this->memory_size += numPages*memory::BIG_PAGE_SIZE;
+            //recover the index of the first page allocated
+            int firstPage = curr - numPages;
+            //get the address of the page
+            auto firstPagePtr = (uint8_t*)page_index_to_address(firstPage);
+            //install the header in the block
+            return this->makeBlock(firstPagePtr - this->memory_base, nullptr, size);
+    }
+
     void* MAllocator::malloc(size_t size) {
         //Try to get a free header of the required size
         header* hdr = this->findFree(size);
         //If we failed, ask for enough new pages and try again
         if(hdr == nullptr) {
-            //this->pg_allocator->allocate(size);
+            hdr = this->grow(size);
         }
+
+        //If the requested size is large enough, and the remaining size after a split is also large enough
+        size_t splitSize = size;
+        if(splitSize < MALLOCATOR_MIN_BLOCK_SIZE) {
+            splitSize = MALLOCATOR_MIN_BLOCK_SIZE;
+        }
+        size_t remainderSize = hdr->totalSize() - splitSize;
+        if(remainderSize > sizeof(header) + MALLOCATOR_MIN_BLOCK_SIZE) {
+            //split
+            //Shrink the current header
+            hdr->dataSize = splitSize;
+            //Generate the new block
+            auto newHeaderPointer = hdr->dataPtr() + splitSize;
+            this->makeBlock(newHeaderPointer - this->memory_base, nullptr, remainderSize - sizeof(header));
+        }
+        //Set as used
+        hdr->free = false;
+        //Return the pointer to the hdr data
+        return hdr->dataPtr();
+    }
+
+
+    void MAllocator::free(void* ptr){
+        //The the block's header
+        uint8_t* header_ptr = ((uint8_t*)(ptr)) - sizeof(header);
+        header* hdr = (header*)header_ptr;
+        hdr->free = true;
+        //Try to merge the header!
+        this->tryMerge(hdr);
     }
     
-    void MAllocator::free(void* ptr) {
+    MAllocator::MAllocator(page_allocator* pg_alloc) {
+        this->pg_allocator = pg_alloc;
+        int firstPage = this->pg_allocator->allocate();
+        this->memory_base = (uint8_t*)(page_index_to_address(firstPage));
+        this->memory_size = BIG_PAGE_SIZE - sizeof(header);
+        this->makeBlock(0, "", this->memory_size - sizeof(header));
+    }
 
+    void MAllocator::log_state() {
+        logf("Header size is %x\n", sizeof(header));
+        logf("--MAllocator DEBUG START--\n");
+        logf("Memory base = %x, Memory size = %d bytes, memory end = %x\n", 
+        this->memory_base, this->memory_size, sizeof(header) + this->memory_base + this->memory_size);
+        logf("Showing blocks...\n");
+        header* hdr = this->first();
+        while(hdr != nullptr) {
+            logf("Header address = %x, data address = %x, data size = %d B, free = %b tag = [%s]\n",
+                (uint32_t)hdr, (uint32_t)hdr->dataPtr(), hdr->dataSize,  hdr->free, hdr->info);
+            hdr = this->nextHeader(hdr);
+        }
     }
 };

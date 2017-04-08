@@ -4,21 +4,22 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <memory/paging.h>
-
+#include <memory/MemoryAllocator.h>
 
 namespace memory {
 
-    class MAllocator {
+    class MAllocator : MemoryAllocator {
         private:
+        static const int HEADER_INFO_SIZE = 5;
         struct header {
             uint16_t magic;
-            size_t infoSize;
             size_t dataSize;
             bool free;
+            char info[HEADER_INFO_SIZE];
 
             size_t totalSize();
             void check();
-            uint8_t* infoPtr();
+            char* infoPtr();
             uint8_t* dataPtr();
             void carpet_with(uint8_t value);
         };
@@ -32,14 +33,17 @@ namespace memory {
 
         uint8_t* memoryLimit();
         
-        MAllocator::header* nextHeader(header* current);
-        MAllocator::header* makeBlock(size_t offset, size_t infoSize, uint8_t* infoPtr, size_t dataSize);
+        header* nextHeader(header* current);
+        header* makeBlock(size_t offset, char* infoPtr, size_t dataSize);
         void tryMerge(header* startHeader);
         header* first();
         header* findFree(size_t size);
+        header* grow(size_t size);
         public:
-        void* malloc(size_t size);
-        void free(void* ptr);
+        MAllocator(page_allocator* pg_alloc);
+        virtual void* malloc(size_t size);
+        virtual void free(void* ptr);
+        void log_state();
     };
 };
 
