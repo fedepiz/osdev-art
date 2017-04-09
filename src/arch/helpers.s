@@ -2,6 +2,12 @@
 ;this is needed to be so or because of convenience.
 section .text
 
+global read_cr2
+
+read_cr2:
+   mov eax, cr2
+   ret
+
 global outb             ; make the label outb visible outside this file
 
 ; outb - send a byte to an I/O port

@@ -47,25 +47,19 @@ namespace kterm {
     }
 
     void Shell::mainLoop() {
-        //this->term->puts("Welcome to Art 0.1a\n");
-        //print_rainbow(this->term, "Beauty lies in the eye of the beholder\n");
+        this->term->puts("Welcome to Art 0.1a\n");
+        print_rainbow(this->term, "Beauty lies in the eye of the beholder\n");
 
-        {
-            vector<string> vec;
-            vec.push_back(string("Test"));
-            vec.push_back(string("it"));
-            memory::kernelHeapLogState();
-        }
-        memory::kernelHeapLogState();
-        bool keep_going = false;
+        bool keep_going = true;
         while(keep_going) {
-            //string line = this->term->gets();
-            this->processCommand();
-            //keep_going = line != string("quit");
+            logf("Writing\n");
+            char ch = this->getTerminal()->getchar();
+            keep_going = ch != 'q';
         }
     }
 
-    void Shell::processCommand() {
+    void Shell::processCommand(const string &line) {
+        //auto vec = line.split('/');
         //string s = string("Test/it/now");           
         //auto vec = s.split('/', false);
         //for(unsigned i = 0; i < vec.size(); i++) {

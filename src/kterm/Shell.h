@@ -9,7 +9,7 @@ namespace kterm {
     class Shell {
         private:
         Terminal* term;
-        void processCommand();
+        void processCommand(const kstd::string& line);
         public:
         Shell(Terminal* term);
         Terminal* getTerminal();

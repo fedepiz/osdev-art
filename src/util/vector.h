@@ -19,6 +19,7 @@ namespace util {
         void grow();
         public:
         vector();
+        vector(size_t capacity);
         ~vector();
         void push_back(const T& val);
         const T* buffer() const;
@@ -33,9 +34,14 @@ namespace util {
     template <class T> vector<T>::vector() {       
         //logf("Constructing vector of element size %d\n", sizeof(T));
         this->array = new T[VECTOR_INIITAL_SIZE];
-        logf("---");
-        memory::kernelHeapLogEntry(this->array);
         this->arr_size = VECTOR_INIITAL_SIZE;
+        this->item_count = 0;
+    }
+
+    template <class T> vector<T>::vector(size_t capacity) {
+        if(capacity == 0) capacity = 1;
+        this->array = new T[capacity];
+        this->arr_size = capacity;
         this->item_count = 0;
     }
 
@@ -119,7 +125,6 @@ namespace util {
     template <class T> vector<T>& vector<T>::operator=(const vector& other) {
         this->arr_size = other->arr_size;
         this->item_count = other->item_count;
-        memory::kernelAllocSetNextTag("VCPY");
         this->array = new T[arr_size];
         for(unsigned int i = 0; i < other.size(); i++) {
             this->array[i] = other.array[i];

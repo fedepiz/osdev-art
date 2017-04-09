@@ -8,7 +8,7 @@ mkdir -p build/filesystem
 mkdir -p build/kstd
 mkdir -p build/kterm
 
-export CFLAGS="-std=c++11 -nostdlib -nostartfiles -ffreestanding -O0 -Wall -Wextra -fno-exceptions -fno-rtti -Isrc -lgcc"
+export CFLAGS="-std=c++11 -nostdlib -nostartfiles -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -Isrc -lgcc"
 
 nasm -felf32 src/arch/boot.s -o build/arch/boot.o
 nasm -felf32 src/arch/helpers.s -o build/arch/helpers.o

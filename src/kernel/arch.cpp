@@ -207,9 +207,12 @@ const char* exception_messages[] = {
     "Reserved"
 };
 
+extern "C" uint32_t read_cr2();
+
 extern "C" void fault_handler(struct regs *r) {
     if(r->int_no == 14){
-        logf("Page fault!\n");
+        uint32_t cr2 = read_cr2();
+        logf("Page fault on reading linear address %x\n", cr2);
         for(;;){
 
         }

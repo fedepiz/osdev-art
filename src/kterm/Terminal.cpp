@@ -159,19 +159,19 @@ namespace kterm {
             //hacky for now, but enforces the loop
             logf("");
         }
-
         key_info_t key_info = this->inBuffer.behead();
         char ch = this->keyToChar(key_info);
-
         if(this->inputEcho && !keyboard::key_is_special(key_info.keycode)) {
-           this->putchar(ch);
+            this->putchar(ch);
         }
         //logf("LEAVING GETCHAR\n");
         return ch;
     }
 
     string Terminal::gets() {
-        util::vector<char> vec;
+        
+        util::vector<char> vec(10);
+        
         char c = this->getchar();
         //While not enter
         while(c != '\n') {
@@ -186,7 +186,7 @@ namespace kterm {
         c_str[vec.size()] = '\0';
 
         string str(c_str);
-        delete c_str;
+        delete[] c_str;
         return str;
     }
 

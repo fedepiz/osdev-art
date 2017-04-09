@@ -13,7 +13,6 @@ namespace kstd {
         string(const char* str);
         string(const char* str, unsigned int count);
         string(const string& other);
-        string(const util::vector<char>& vec);
         ~string();
         string& operator=(const string& other);
         unsigned int size() const;
@@ -22,6 +21,7 @@ namespace kstd {
         bool operator!=(const string& other) const;
         static bool compare(const string& s1, const string& s2);
         const char* str() const;
+        util::vector<string> split(char sep) const;
         util::vector<string> split(char sep, bool repsep) const;
     };
 };
