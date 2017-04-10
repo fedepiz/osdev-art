@@ -36,7 +36,12 @@ namespace util {
     }
 
     template <class T> list<T>::~list() {
-        
+        node_t* ptr = this->head_ptr;
+        while(ptr != nullptr) {
+            node_t* toKill = ptr;
+            ptr = ptr->next;
+            delete toKill;
+        }
     }
 
     template <class T> typename list<T>::node_t* list<T>::get_node(int index) {
@@ -83,11 +88,15 @@ namespace util {
     }
 
     template <class T> void list<T>::prepend(T value) {
+        node_t* newNode = new node_t;
+        newNode->value = value;
+        newNode->next = this->head_ptr;
+        this->head_ptr = newNode;
     }
 
     template <class T> void list<T>::append(T value) {
         node_t* newNode = new node_t;
-        logf("New node build at address %x\n", newNode);
+        //logf("New node build at address %x\n", newNode);
         newNode->value = value;
         newNode->next = nullptr;
         if(this->head_ptr == nullptr) {
