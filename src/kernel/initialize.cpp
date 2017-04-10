@@ -5,6 +5,7 @@
 #include <kernel/multiboot.h>
 #include <util/StaticHeap.h>
 #include <memory/subsystem.h>
+#include <memory/paging.h>
 #include <driver/serial.h>
 #include <driver/vga_terminal.h>
 #include <driver/keyboard.h>
@@ -12,11 +13,10 @@
 #include <filesystem/VFS.h>
 #include <util/vector.h>
 #include <util/text.h>
+#include <string.h>
 using kstd::log;
 using kstd::itoa;
-using kstd::malloc;
-using kstd::free;
-
+using kstd::string;
 using util::logf;
 
 
