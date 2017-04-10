@@ -4,7 +4,6 @@
 #include <kstdio.h>
 #include <kstdlib.h>
 #include <stddef.h>
-#include <util/text.h>
 #include <memory/debug.h>
 
 namespace util {

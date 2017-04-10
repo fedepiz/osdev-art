@@ -21,6 +21,7 @@ namespace kstd {
         bool operator!=(const string& other) const;
         static bool compare(const string& s1, const string& s2);
         const char* str() const;
+        string substring(size_t startIndex, size_t length) const;
         util::vector<string> split(char sep) const;
         util::vector<string> split(char sep, bool repsep) const;
     };

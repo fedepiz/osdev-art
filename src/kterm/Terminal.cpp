@@ -155,6 +155,7 @@ namespace kterm {
 
     char Terminal::getchar() {
         //Block until we have input
+        retry:
         while(!this->hasInput()) {
             //hacky for now, but enforces the loop
             logf("");
@@ -163,6 +164,8 @@ namespace kterm {
         char ch = this->keyToChar(key_info);
         if(this->inputEcho && !keyboard::key_is_special(key_info.keycode)) {
             this->putchar(ch);
+        } else {
+            goto retry;
         }
         //logf("LEAVING GETCHAR\n");
         return ch;

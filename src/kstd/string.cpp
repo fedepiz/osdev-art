@@ -84,9 +84,47 @@ namespace kstd {
         return this->split(sep, true);
     }
 
+    string string::substring(size_t startIndex, size_t length) const {
+        if(startIndex + length > this->length) {
+            panic("Substring too long!");
+        }
+
+        char* ptr = this->buffer + startIndex;
+        string str(ptr, length);
+        return str;
+    }
+
     vector<string> string::split(char sep, bool repsep) const {
         vector<string> container;
-        container.push_back(*this);
+        size_t startPos = 0;
+        bool met_separator = false;
+        for(size_t pos = 0; pos < this->length; pos++) {
+            char currentCharacter = (*this)[pos];
+            //logf("Current char %d\n", currentCharacter);
+            //Is the word a separator?
+            if(currentCharacter == sep) {
+                //If we met a separator before, and repsep is on, just do nothing
+                if(met_separator && repsep) {
+
+                } else {
+                    //Otherwise, let's record in a string from the current start to the character before the separator
+                    string str = this->substring(startPos, pos - startPos);
+                    container.push_back(str);
+                }
+                //Mark meeting the separator
+                met_separator = true;
+                //Advance the pos
+                startPos = pos+1;
+            } else {
+                //Just mark
+                met_separator = false;
+            }
+        }
+        //If the startPosition is not the same as the length, then we have some leftover to add
+        if(startPos < this->length) {
+            string str = this->substring(startPos, this->length - startPos);
+            container.push_back(str);
+        }
         return container;
     }
 };

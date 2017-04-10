@@ -39,6 +39,7 @@ namespace kterm {
     }
 
     Shell::Shell(Terminal* term) {
+        this->quitSignal = false;
         this->term = term;
     }
 
@@ -50,21 +51,24 @@ namespace kterm {
         this->term->puts("Welcome to Art 0.1a\n");
         print_rainbow(this->term, "Beauty lies in the eye of the beholder\n");
 
-        bool keep_going = true;
-        while(keep_going) {
-            logf("Writing\n");
-            char ch = this->getTerminal()->getchar();
-            //char ch = 'a';
-            keep_going = ch != 'q';
+        while(!this->quitSignal) {
+            string line = this->getTerminal()->gets();
+            processCommand(line);
         }
     }
 
     void Shell::processCommand(const string &line) {
-        //auto vec = line.split('/');
-        //string s = string("Test/it/now");           
-        //auto vec = s.split('/', false);
-        //for(unsigned i = 0; i < vec.size(); i++) {
-        //    this->getTerminal()->puts(vec[i].str());
-        //}
+        auto vec = line.split(' ');
+        if(vec.size() == 0) {
+            return;
+        }
+        string commandName = vec[0];
+        if(commandName == string("quit")) {
+            this->term->puts("KTerm closing...\n");
+            this->quitSignal = true;
+        } else {
+            string str = util::stringf("Unknown command \"%s\"\n", commandName.str());
+            this->term->puts(str.str());
+        }
     }
 };

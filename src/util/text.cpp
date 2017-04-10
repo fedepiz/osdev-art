@@ -4,7 +4,6 @@
 #include <kstdlib.h>
 #include <util/vector.h>
 #include <stdarg.h>
-#include <string.h>
 
 namespace util {
     using util::vector;
@@ -53,6 +52,9 @@ namespace util {
                     //String within a string
                     char* s = va_arg(args, char*);
                     push_string(vec, s);
+                } else if (c == 'c') {
+                    char c = (char)va_arg(args, int);
+                    vec.push_back(c);
                 }
             } else {
                 //no - just add it to the vector
@@ -76,16 +78,15 @@ namespace util {
         return res;
     }
 
-    typedef void (*writechar_t)(char);
 
-    static void writestring(writechar_t writeF, const char* str) {
+    template <typename T> static void writestring(T writeF, const char* str) {
         while(*str != '\0') {
             writeF(*str);
             str++;
         }
     }
 
-    void implace_format(writechar_t writeF, const char* fmt, va_list args) {
+    template <typename T> void implace_format(T writeF, const char* fmt, va_list args) {
         //While we have some format characters
         while(*fmt != '\0') {
             //is it special?
@@ -116,6 +117,10 @@ namespace util {
                     } else {
                         writestring(writeF, "false");
                     }
+                }
+                else if (c == 'c') {
+                    char ch = (char)va_arg(args, int);
+                    writeF(ch);
                 }
             } else {
                 //no - just add it to the vector
@@ -152,8 +157,15 @@ namespace util {
             
         }
         va_end(args);
+    }
 
-        //panic(str);
-        //delete str;
+    kstd::string stringf(const char* fmt, ...) {
+        vector<char> vec;
+        auto f = [&] (char c) { vec.push_back(c); };
+        va_list args;
+        va_start(args, fmt);
+        implace_format(f, fmt, args);
+        va_end(args);
+        return kstd::string(vec.buffer(), vec.size());
     }
 };
