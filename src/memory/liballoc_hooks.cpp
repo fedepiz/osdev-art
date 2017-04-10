@@ -28,20 +28,36 @@ extern "C" int liballoc_unlock() {
  * \return A pointer to the allocated memory.
  */
 
+bool cpp_alloc_debug_mode = false;
 
+namespace memory {
+    void set_memory_allocator_debug_mode(bool state) {
+    cpp_alloc_debug_mode = state;
+}
+};
 
  extern "C" void* liballoc_alloc(int num_pages) {
-    //logf("Liballoc requesting %d pages\n", num_pages);
+     if(cpp_alloc_debug_mode) {
+         logf("Liballoc requesting %d pages\n", num_pages);
+         //memory::kernel_page_allocator.debug(true);
+     }
     int basePage = -1;
     for(int i = 0; i < num_pages;i++) {
         int index = memory::kernel_page_allocator.allocate();
+        if(index == -1) {
+            logf("OUT OF MEMORY!\n");
+            panic("OUT OF MEMORY!\n");
+            return nullptr;
+        }
         if(i == 0) {
             basePage = index;
         }
     }
     //memory::kernel_page_allocator.debug(true);
     void* ptr = memory::page_index_to_address(basePage);
-    //logf("Allocated pages starting from %x\n",ptr);
+    if(cpp_alloc_debug_mode) {
+        logf("Allocated pages starting from %d(%x)\n",basePage, ptr);
+     }
     return ptr;
  }
 

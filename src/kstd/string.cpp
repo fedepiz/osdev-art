@@ -14,7 +14,6 @@ namespace kstd {
         this->length = 0;
     }
     string::string(const char* str) {
-        //logf("Allocating string\n");
         size_t len = strlen(str);
         this->buffer = new char[len+1];
         this->length = len;

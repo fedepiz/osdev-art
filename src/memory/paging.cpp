@@ -185,7 +185,6 @@ namespace memory {
     page_allocator kernel_page_allocator;
     page_state kernel_page_allocator_pages_array[1024];
 
-
     void kernel_allocator_initialize() {
         int kernel_start_page = address_to_page_index((void*)&arch::kernel_start);
         int pages_to_end_of_memory = 1024 - kernel_start_page;
@@ -200,6 +199,10 @@ namespace memory {
         for(int i = 0; i < pages_to_reserve;i++) {
             kernel_page_allocator.reserve(kernel_start_page+i);
         }
+    }
+
+    void kernel_page_allocator_debug(bool verbose) {
+        memory::kernel_page_allocator.debug(verbose);
     }
 
     void paging_initialize() {

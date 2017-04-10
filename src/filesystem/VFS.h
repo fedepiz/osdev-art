@@ -16,12 +16,14 @@ namespace vfs {
         list<VFSNode*> children;
         public:
         VFSNode(string name);
+        VFSNode(const char* string);
         string getName();
         const list<VFSNode*> getChildren();
         void addChild(VFSNode* child);
     };
 
     VFSNode* initialize();
+    VFSNode* getRoot();
     void mount_modules(VFSNode* parent, multiboot::multiboot_info_t* mbinfo);
 };
 #endif

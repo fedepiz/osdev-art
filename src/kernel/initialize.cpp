@@ -56,6 +56,9 @@ void initialize(uint32_t ebx) {
 	pit::initialize(pit::DEFAULT_FREQUENCY_HZ, &pit_test);
 	keyboard::initialize();
 
+	//vfs::VFSNode* test = new vfs::VFSNode(string("Mitochondria!"));
+	//vfs::VFSNode* bollocks = new vfs::VFSNode(string("Bollocks!"));
+	//smemory::kernel_page_allocator.debug(true);
 	//Filesystem
 	vfs::VFSNode* root = vfs::initialize();
 	vfs::mount_modules(root, mbinfo);

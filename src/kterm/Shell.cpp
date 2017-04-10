@@ -5,6 +5,7 @@
 #include <kstdio.h>
 #include <kstdlib.h>
 #include <util/text.h>
+#include <filesystem/VFS.h>
 #include <memory/debug.h>
 
 namespace kterm {
@@ -47,13 +48,41 @@ namespace kterm {
         return this->term;
     }
 
+    void test() {
+        for(int i = 0; i < 1000; i++) {
+            int* x = new int[8];
+            *x = 22;
+            logf("%d %d\n", i, *x);
+        }
+        memory::kernel_page_allocator_debug(true);
+    }
+
     void Shell::mainLoop() {
         this->term->puts("Welcome to Art 0.1a\n");
         print_rainbow(this->term, "Beauty lies in the eye of the beholder\n");
+        //test();
 
         while(!this->quitSignal) {
             string line = this->getTerminal()->gets();
             processCommand(line);
+        }
+    }
+
+    void processDebugCommand(Shell* shell, const vector<string> &line) {
+        Terminal* term = shell->getTerminal();
+        if(line.size() == 1) {
+            term->puts("Debug [pages|fs]\n");
+            return;
+        } 
+        string type = line.get(1);
+        if(type == "pages") {
+            memory::kernel_page_allocator_debug(true);
+        } else if(type == "fs") {
+            vfs::VFSNode* root = vfs::getRoot();
+            term->puts(root->getName().str());
+            term->puts("\n");
+        } else {
+            term->puts("Unknown debug type\n");
         }
     }
 
@@ -66,7 +95,10 @@ namespace kterm {
         if(commandName == string("quit")) {
             this->term->puts("KTerm closing...\n");
             this->quitSignal = true;
-        } else {
+        } else if(commandName == string("debug")) {
+           processDebugCommand(this, vec);
+        }
+        else {
             string str = util::stringf("Unknown command \"%s\"\n", commandName.str());
             this->term->puts(str.str());
         }

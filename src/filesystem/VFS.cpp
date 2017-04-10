@@ -12,6 +12,11 @@ namespace vfs {
     VFSNode::VFSNode(string name) {
         this->name = name;
     }
+
+    VFSNode::VFSNode(const char* name) {
+        this->name = string(name);
+    }
+
     string VFSNode::getName() {
         return this->name;
     }
@@ -29,14 +34,17 @@ namespace vfs {
         return root;
     }
 
+    VFSNode* getRoot() {
+        return root;
+    }
+
     void mount_modules(VFSNode* parent, multiboot::multiboot_info_t* mbinfo) {
         auto modules = multiboot::get_virt_modules(mbinfo);
         for(unsigned int i = 0; i < modules.size();i++) {
             auto module = modules[i];
-            //string name = string(module.string);
-            //logf("Module name is %s\n",name);
-            VFSNode* moduleNode = new VFSNode(string("Modulo\n"));
-            //parent->addChild(moduleNode);
+            string name = string(module.string);
+            VFSNode* moduleNode = new VFSNode(name);
+            parent->addChild(moduleNode);
         }
     }
 };

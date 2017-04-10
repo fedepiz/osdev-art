@@ -2,7 +2,6 @@
 #include <util/vector.h>
 #include <kstdio.h>
 #include <kstdlib.h>
-#include <util/vector.h>
 #include <stdarg.h>
 
 namespace util {
@@ -100,6 +99,10 @@ namespace util {
                 } else if (c == 'd') {
                     //print integer in decimal form
                     int x = va_arg(args, int);
+                    writestring(writeF, kstd::itoa(x).str);
+                }
+                else if (c == 'i') {
+                    unsigned int x = va_arg(args, int);
                     writestring(writeF, kstd::itoa(x).str);
                 } else if (c == 'x') {
                     //hex
