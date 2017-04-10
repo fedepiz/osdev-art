@@ -57,7 +57,7 @@ void initialize(uint32_t ebx) {
 	keyboard::initialize();
 
 	//Filesystem
-	//vfs::initialize();
-	//vfs::mount_multiboot_modules(mbinfo);
+	vfs::VFSNode* root = vfs::initialize();
+	vfs::mount_modules(root, mbinfo);
 	//util::logf("%s\n", vfs::root->getName());
 }
