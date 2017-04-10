@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <kstdlib.h>
 #include <kstdio.h>
-#include <memory/subsystem.h>
+#include <memory/liballoc.h>
 #include <util/text.h>
 
 extern "C" void __cxa_pure_virtual() {
@@ -9,19 +9,19 @@ extern "C" void __cxa_pure_virtual() {
 }
 
 void *operator new(size_t size) {
-    return memory::getKernelHeap()->malloc(size);
+    return malloc(size);
 }
 
  
 void *operator new[](size_t size) {
-    return  memory::getKernelHeap()->malloc(size);
+    return  malloc(size);
 }
  
 void operator delete(void *p) {
-     memory::getKernelHeap()->free(p);
+     free(p);
 }
  
 void operator delete[](void *p) {
-     memory::getKernelHeap()->free(p);
+     free(p);
 }
 

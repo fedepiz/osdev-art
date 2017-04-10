@@ -39,6 +39,7 @@ namespace memory {
             frame_alloc_initialize(arch::kernel_size(), mem_size);
             multiboot::reserve_modules_frames(mbinfo);
             paging_initialize();  
-            kernel_heap_initialize();
+            //Givin liballoc a new go
+            //kernel_heap_initialize();
     }
 };

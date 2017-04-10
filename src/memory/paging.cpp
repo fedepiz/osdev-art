@@ -131,6 +131,8 @@ namespace memory {
         free_frame(frame_index);
         //Unmap the page
         unmap_page(page);
+        //set the state to free
+        this->pages_array[page_index] = page_state::free;
     }
 
     void page_allocator::debug(bool verbose) {

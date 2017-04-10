@@ -32,7 +32,7 @@ unsigned int l_inuse = 0;			//< The amount of memory in use (malloc'ed).
 
 static int l_initialized = 0;			//< Flag to indicate initialization.	
 static int l_pageSize  = memory::BIG_PAGE_SIZE;			//< Individual page size
-static int l_pageCount = 16;			//< Minimum number of pages to allocate.
+static int l_pageCount = 1;			//< Minimum number of pages to allocate.
 
 
 // ***********   HELPER FUNCTIONS  *******************************
@@ -529,46 +529,5 @@ void*   realloc(void *p, size_t size)
 	free( p );
 
 	return ptr;
-}
-
-int liballoc_lock() {
-    return 0;
-}
-
-/** This function unlocks what was previously locked by the liballoc_lock
- * function.  If it disabled interrupts, it enables interrupts. If it
- * had acquiried a spinlock, it releases the spinlock. etc.
- *
- * \return 0 if the lock was successfully released.
- */
-extern int liballoc_unlock() {
-    return 0;
-}
-
-/** This is the hook into the local system which allocates pages. It
- * accepts an integer parameter which is the number of pages
- * required.  The page size was set up in the liballoc_init function.
- *
- * \return NULL if the pages were not allocated.
- * \return A pointer to the allocated memory.
- */
- void* liballoc_alloc(int num_pages) {
-    int firstIndex = memory::kernel_page_allocator.allocate();
-    for(int i = 1; i < num_pages;i++) {
-        memory::kernel_page_allocator.allocate();
-    }
-    return memory::page_index_to_address(firstIndex);
- }
-
-/** This frees previously allocated memory. The void* parameter passed
- * to the function is the exact same value returned from a previous
- * liballoc_alloc call.
- *
- * The integer value is the number of pages to free.
- *
- * \return 0 if the memory was successfully freed.
- */
-int liballoc_free(void*,int) {
-    return 0;
 }
 

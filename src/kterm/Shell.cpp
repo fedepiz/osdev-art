@@ -54,6 +54,7 @@ namespace kterm {
         while(keep_going) {
             logf("Writing\n");
             char ch = this->getTerminal()->getchar();
+            //char ch = 'a';
             keep_going = ch != 'q';
         }
     }

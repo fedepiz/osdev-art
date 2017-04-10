@@ -61,7 +61,7 @@ namespace multiboot {
         int mod_base_frame = memory::address_to_frame_index((void*)mod_phys_addr);
         for(int i = 0; i < num_frames; i++) {
             int frameIndex = mod_base_frame + 1;
-            if(!memory::state_of_frame(frameIndex) == memory::frame_state::RESERVED) {
+            if(memory::state_of_frame(frameIndex) != memory::frame_state::RESERVED) {
                 memory::reserve_frame(mod_base_frame+i);
             }
         }
