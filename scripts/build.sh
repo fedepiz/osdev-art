@@ -26,6 +26,7 @@ i686-elf-g++ -c src/memory/paging.cpp -o build/memory/paging.o $CFLAGS $CWARNS
 i686-elf-g++ -c src/memory/frame_alloc.cpp -o build/memory/frame_alloc.o $CFLAGS $CWARNS
 i686-elf-g++ -c src/memory/liballoc.cpp -o build/memory/liballoc.o $CFLAGS
 i686-elf-g++ -c src/memory/liballoc_hooks.cpp -o build/memory/liballoc_hooks.o $CFLAGS $CWARNS
+i686-elf-g++ -c src/memory/debug.cpp -o build/memory/debug.o $CFLAGS $CWARNS
 
 
 i686-elf-g++ -c src/kstd/kstdio.cpp -o build/kstd/kstdio.o $CFLAGS $CWARNS

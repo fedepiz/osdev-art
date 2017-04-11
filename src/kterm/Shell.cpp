@@ -60,16 +60,68 @@ namespace kterm {
         }
     }
 
-    void processDebugCommand(Shell* shell, const vector<string> &line) {
+    typedef void (*processCommand_t)(Shell* shell, const vector<string>& line);
+
+    struct shellCommand {
+        const char* name;
+        const char* helpText;
+        processCommand_t handler;
+    };
+
+    void handleHelp(Shell* shell, const vector<string> &line);
+    void handleQuit(Shell* shell, const vector<string> &line);
+    void handleDebug(Shell* shell, const vector<string> &line);
+    void handleEcho(Shell *shell, const vector<string> &line);
+
+    shellCommand commandTable[] = {
+        { "help" , "Usage: Help [commandName]", handleHelp},
+        { "quit", "Exits kTerm", handleQuit },
+        { "debug", "Prints debug information. Usage: debug [frames|pages|fs]", handleDebug },
+        { "echo", "Parrots back something. Usage: echo [anything]", handleEcho },
+        { nullptr, nullptr, nullptr }
+    };
+
+    unsigned int countCommandsInTable(shellCommand* table) {
+        unsigned int counter = 0;
+        while(table[counter].name != nullptr) {
+            counter++;
+        }
+        return counter;
+    }
+
+    void handleQuit(Shell* shell, const vector<string> &line) {
+        (void)line;
+        shell->getTerminal()->puts("KTerm closing...\n");
+        shell->quitSignal = true;
+    }
+
+    void handleHelp(Shell* shell, const vector<string> &line) {
+        Terminal *term = shell->getTerminal();
+        if(line.size() == 1) {
+            term->puts("Valid commands\n");
+            for(unsigned int i = 0; i < countCommandsInTable(commandTable);i++) {
+                shellCommand* command = &commandTable[i];
+                term->puts(command->name);
+                term->puts(" - ");
+                term->puts(command->helpText);
+                term->puts("\n");
+            }
+        }
+    }
+
+    void handleDebug(Shell* shell, const vector<string> &line) {
         Terminal* term = shell->getTerminal();
         if(line.size() == 1) {
-            term->puts("Debug [pages|fs]\n");
+            term->puts("Usage: debug [frames|pages|fs]\n");
             return;
         } 
         string type = line.get(1);
         if(type == "pages") {
             memory::kernel_page_allocator_debug(true);
-        } else if(type == "fs") {
+        } else if (type == "frames") {
+            memory::kernel_frame_allocator_debug(true);    
+        }
+        else if(type == "fs") {
             vfs::VFSNode* root = vfs::getRoot();
             term->puts(root->getName().str());
             term->puts("\n");
@@ -78,7 +130,7 @@ namespace kterm {
         }
     }
 
-    void processEchoCommand(Shell *shell, const vector<string> &line) {
+    void handleEcho(Shell *shell, const vector<string> &line) {
         Terminal* term = shell->getTerminal();
         if(line.size() == 1) {
             term->puts("echo [anything]\n");
@@ -100,22 +152,19 @@ namespace kterm {
             return;
         }
         string commandName = vec[0];
-        if(commandName == string("quit")) {
-            this->term->puts("KTerm closing...\n");
-            this->quitSignal = true;
-        } else if(commandName == string("debug")) {
-           processDebugCommand(this, vec);
-        } else if (commandName == string("echo")) {
-            processEchoCommand(this, vec);
+        for(unsigned int i = 0; i < countCommandsInTable(commandTable); i++) {
+            shellCommand *command = &commandTable[i];
+            if(string(command->name) == commandName) {
+                command->handler(this, vec);
+                return;
+            }
         }
-        else {
-            string str = util::stringf("Unknown command %s\n", commandName.str());
-            logf("Parsed unkown commmand %s\n", str.str());
-            //logf("Character breakdown:\n");
-            //for(unsigned int i = 0; i < commandName.size();i++) {
-            //    logf("Character %d: '%c'(%d)\n", i, commandName[i], commandName[i]);
-            //} 
-            this->term->puts(str.str());
-        }
+        string str = util::stringf("Unknown command %s\n", commandName.str());
+        logf("Parsed unkown commmand %s\n", str.str());
+        //logf("Character breakdown:\n");
+        //for(unsigned int i = 0; i < commandName.size();i++) {
+        //    logf("Character %d: '%c'(%d)\n", i, commandName[i], commandName[i]);
+        //} 
+        this->term->puts(str.str());
     }
 };

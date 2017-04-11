@@ -5,13 +5,14 @@
 #include <string.h>
 
 
-namespace kterm {
+namespace kterm {    
     class Shell {
         private:
-        bool quitSignal;
         Terminal* term;
         void processCommand(const kstd::string& line);
+        //Handlers
         public:
+        bool quitSignal;
         Shell(Terminal* term);
         Terminal* getTerminal();
         void mainLoop();

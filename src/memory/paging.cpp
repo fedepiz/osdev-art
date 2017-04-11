@@ -201,10 +201,6 @@ namespace memory {
         }
     }
 
-    void kernel_page_allocator_debug(bool verbose) {
-        memory::kernel_page_allocator.debug(verbose);
-    }
-
     void paging_initialize() {
         //The initial page is the boot page directory
         page_directory = (uint32_t*)&BootPageDirectory;
