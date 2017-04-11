@@ -91,7 +91,6 @@ unsigned char kbdus_upper[128] = {
 };		
 
     Terminal* inputMasterTerminal = nullptr;
-
     //Signals to the master terminal that a key has been pressed
     //Used to hook up keyboard drivers to the terminal
     void inputMasterOnKeyPress(keyboard::key_info_t key_info) {

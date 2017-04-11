@@ -7,6 +7,7 @@ mkdir -p build/util
 mkdir -p build/filesystem
 mkdir -p build/kstd
 mkdir -p build/kterm
+mkdir -p build/tasks
 
 export CFLAGS="-std=c++11 -nostdlib -nostartfiles -ffreestanding -O2 -fno-exceptions -fno-rtti -Isrc -lgcc"
 export CWARNS="-Wall -Wextra"
@@ -42,6 +43,8 @@ i686-elf-g++ -c src/util/heap_common.cpp -o build/util/heap_common.o $CFLAGS $CW
 i686-elf-g++ -c src/util/StaticHeap.cpp -o build/util/StaticHeap.o $CFLAGS $CWARNS
 i686-elf-g++ -c src/util/DynamicHeap.cpp -o build/util/DynamicHeap.o $CFLAGS $CWARNS
 i686-elf-g++ -c src/util/text.cpp -o build/util/text.o $CFLAGS $CWARNS
+
+i686-elf-g++ -c src/tasks/kernelTask.cpp -o build/tasks/kernelTask.o $CFLAGS $CWARNS
 
 i686-elf-g++ -c src/filesystem/VFS.cpp -o build/filesystem/VFS.o $CFLAGS $CWARNS
 

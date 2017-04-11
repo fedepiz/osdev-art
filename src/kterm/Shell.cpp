@@ -8,6 +8,8 @@
 #include <filesystem/VFS.h>
 #include <memory/debug.h>
 
+#include<tasks/kernelTask.h>
+
 namespace kterm {
     using kstd::string;
     using util::vector;
@@ -46,15 +48,6 @@ namespace kterm {
 
     Terminal* Shell::getTerminal() {
         return this->term;
-    }
-
-    void test() {
-        for(int i = 0; i < 1000; i++) {
-            int* x = new int[8];
-            *x = 22;
-            logf("%d %d\n", i, *x);
-        }
-        memory::kernel_page_allocator_debug(true);
     }
 
     void Shell::mainLoop() {
@@ -101,6 +94,7 @@ namespace kterm {
         term->puts("\n");
     }
 
+
     void Shell::processCommand(const string &line) {
         auto vec = line.split(' ', false, '"', true);
         if(vec.size() == 0) {
@@ -117,6 +111,7 @@ namespace kterm {
         }
         else {
             string str = util::stringf("Unknown command %s\n", commandName.str());
+            logf("Parsed unkown commmand %s\n", str.str());
             this->term->puts(str.str());
         }
     }
