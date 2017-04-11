@@ -21,8 +21,8 @@ namespace vfs {
         return this->name;
     }
 
-    const list<VFSNode*> VFSNode::getChildren() {
-        return this->children;
+    const list<VFSNode*>* VFSNode::getChildren() {
+        return &this->children;
     }
     void VFSNode::addChild(VFSNode* child) {
         this->children.append(child);

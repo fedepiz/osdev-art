@@ -109,6 +109,19 @@ namespace kterm {
         }
     }
 
+    void printVFSNode(Terminal* term, vfs::VFSNode* node, int indent) {
+        for(int i = 0; i < indent;i++) {
+            term->putchar(' ');
+        }
+        term->puts(node->getName().str());
+        term->putchar('\n');
+        indent++;
+        for(unsigned int i = 0; i < node->getChildren()->length();i++) {
+            vfs::VFSNode* child = node->getChildren()->get(i);
+            printVFSNode(term, child, indent);
+        }
+    }
+
     void handleDebug(Shell* shell, const vector<string> &line) {
         Terminal* term = shell->getTerminal();
         if(line.size() == 1) {
@@ -123,8 +136,7 @@ namespace kterm {
         }
         else if(type == "fs") {
             vfs::VFSNode* root = vfs::getRoot();
-            term->puts(root->getName().str());
-            term->puts("\n");
+            printVFSNode(term, root, 0);
         } else {
             term->puts("Unknown debug type\n");
         }

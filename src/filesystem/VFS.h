@@ -18,7 +18,7 @@ namespace vfs {
         VFSNode(string name);
         VFSNode(const char* string);
         string getName();
-        const list<VFSNode*> getChildren();
+        const list<VFSNode*>* getChildren();
         void addChild(VFSNode* child);
     };
 

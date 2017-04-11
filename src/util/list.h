@@ -15,19 +15,20 @@ namespace util {
             node_t* next;
         };
         node_t* head_ptr;
-        node_t* get_node(int index);
+        node_t* get_node(int index) const;
         node_t* last_node();
         public:
         list();
         ~list();
-        bool is_empty();
-        size_t length();
+        bool is_empty() const;
+        size_t length() const;
         void prepend(T value);
         void append(T value);
         T behead();
         void remove_last();
-        T get(size_t index);
+        T get(size_t index) const;
         T& operator[](size_t index);
+        void debug() const;
     };
 
 
@@ -44,13 +45,13 @@ namespace util {
         }
     }
 
-    template <class T> typename list<T>::node_t* list<T>::get_node(int index) {
+    template <class T> typename list<T>::node_t* list<T>::get_node(int index) const {
         node_t* ptr = this->head_ptr;
         for(int i = 0; i < index;i++) {
             if(ptr == nullptr) {
                 panicf("Cannot access list item, list too short!\n");
             }
-            ptr = ptr->head_ptr;
+            ptr = ptr->next;
         }
         return ptr;
     }
@@ -64,14 +65,14 @@ namespace util {
         return ptr;
     }
 
-    template <class T> bool list<T>::is_empty() {
+    template <class T> bool list<T>::is_empty() const {
         return this->head_ptr == nullptr;
     }
 
-    template <class T> size_t list<T>::length() {
+    template <class T> size_t list<T>::length() const {
         size_t count = 0;
         node_t* ptr = this->head_ptr;
-        while(ptr->next != nullptr) {
+        while(ptr != nullptr) {
             ptr = ptr->next;
             count++;
         }
@@ -83,8 +84,18 @@ namespace util {
         return ptr->value;
     }
     
-    template <class T> T list<T>::get(size_t index) {
-        return this[index];
+    template <class T> T list<T>::get(size_t index) const {
+        node_t* ptr = this->get_node(index);
+        return ptr->value;
+    }
+
+    template <class T> void list<T>::debug() const {
+        logf("Debugging list\n");
+        node_t* ptr = this->head_ptr;
+        while(ptr != nullptr) {
+            logf("Node %x -> %x\n", ptr, ptr->next);
+            ptr = ptr->next;
+        }
     }
 
     template <class T> void list<T>::prepend(T value) {
