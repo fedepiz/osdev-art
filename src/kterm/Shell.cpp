@@ -8,7 +8,7 @@
 #include <filesystem/VFS.h>
 #include <memory/debug.h>
 
-#include<tasks/kernelTask.h>
+#include<tasks/tasks.h>
 
 namespace kterm {
     using kstd::string;
@@ -53,7 +53,6 @@ namespace kterm {
     void Shell::mainLoop() {
         this->term->puts("Welcome to Art 0.1a\n");
         print_rainbow(this->term, "Beauty lies in the eye of the beholder\n");
-        //test();
 
         while(!this->quitSignal) {
             string line = this->getTerminal()->gets();

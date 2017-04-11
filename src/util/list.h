@@ -65,7 +65,7 @@ namespace util {
     }
 
     template <class T> bool list<T>::is_empty() {
-        return this->head_ptr != nullptr;
+        return this->head_ptr == nullptr;
     }
 
     template <class T> size_t list<T>::length() {

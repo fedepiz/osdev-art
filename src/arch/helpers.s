@@ -267,3 +267,8 @@ jump_to_address:
 	pop ebp
 	push eax
 	ret
+
+global halt:
+halt:
+	hlt
+	ret

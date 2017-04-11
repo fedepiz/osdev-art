@@ -56,8 +56,9 @@ using util::logf;
         key_info.ctrl_down = ctrl_down;
         //logf("Key is %x, released is %b, Shift is is %b\n", 
         //   key_info.keycode, key_info.released, key_info.shift_down);
+       
         if(active_key_handler != nullptr) {
-                active_key_handler(key_info);
+            active_key_handler(key_info);
         }
     }
 

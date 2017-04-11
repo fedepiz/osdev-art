@@ -53,6 +53,7 @@ namespace kterm {
         void writechar(char c);
         void flushOutBuffer();
         char keyToChar(keyboard::key_info_t key_info);
+        void waitForInput();
         public:
         Terminal();
         ~Terminal();
@@ -76,6 +77,5 @@ namespace kterm {
         void become_master();
         void _signal_key_pressed(keyboard::key_info_t key_info);
     };
-    
 };
 #endif

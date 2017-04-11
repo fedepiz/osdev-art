@@ -6,6 +6,7 @@
 #include <driver/keyboard.h>
 #include <util/text.h>
 #include <util/vector.h>
+#include <tasks/tasks.h>
 
 namespace kterm {
     using kstd::string;
@@ -182,9 +183,15 @@ unsigned char kbdus_upper[128] = {
     }
 
     bool Terminal::hasInput() {
-        return this->inBuffer.is_empty();
+        return !this->inBuffer.is_empty();
     }
-    
+
+    void Terminal::waitForInput() {
+        while(this->inBuffer.is_empty()) {
+            logf("");
+            //tasks::halt();
+        }
+    }
 
     char Terminal::keyToChar(key_info_t key_info) {
         unsigned char* keymap;
@@ -200,10 +207,7 @@ unsigned char kbdus_upper[128] = {
     char Terminal::getchar() {
         //Block until we have input
         retry:
-        while(!this->hasInput()) {
-            //hacky for now, but enforces the loop
-            logf("");
-        }
+        waitForInput();
         key_info_t key_info = this->inBuffer.behead();
         char ch = this->keyToChar(key_info);
         if(this->inputEcho && !keyboard::key_is_special(key_info.keycode)) {

@@ -5,6 +5,7 @@
 
 using util::logf;
 
+
 void hang() {
 	logf("Hanging...\n");
 	for(;;) {
