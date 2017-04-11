@@ -80,7 +80,7 @@ namespace kstd {
     }
 
     vector<string> string::split(char sep) const {
-        return this->split(sep, true);
+        return this->split(sep, true, '\"', false);
     }
 
     string string::substring(size_t startIndex, size_t length) const {
@@ -93,15 +93,20 @@ namespace kstd {
         return str;
     }
 
-    vector<string> string::split(char sep, bool repsep) const {
+    vector<string> string::split(char sep, bool repsep, char literal, bool lit_on) const {
         vector<string> container;
         size_t startPos = 0;
         bool met_separator = false;
+        bool met_literal = false;
         for(size_t pos = 0; pos < this->length; pos++) {
             char currentCharacter = (*this)[pos];
-            //logf("Current char %d\n", currentCharacter);
-            //Is the word a separator?
-            if(currentCharacter == sep) {
+            //Check if we met a literal - that's first
+            if(lit_on && currentCharacter == literal) {
+                //Toggle literal meeting
+                met_literal = !met_literal;
+            }
+            //Is the word a separator? (We don't care if we already met a literal)
+            else if(currentCharacter == sep && !met_literal) {
                 //If we met a separator before, and repsep is on, just do nothing
                 if(met_separator && repsep) {
 

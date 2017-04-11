@@ -23,7 +23,7 @@ namespace kstd {
         const char* str() const;
         string substring(size_t startIndex, size_t length) const;
         util::vector<string> split(char sep) const;
-        util::vector<string> split(char sep, bool repsep) const;
+        util::vector<string> split(char sep, bool repsep, char literal, bool lit_on) const;
     };
 };
 #endif

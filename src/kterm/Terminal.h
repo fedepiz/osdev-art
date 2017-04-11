@@ -1,10 +1,12 @@
 #ifndef KTERM_TERMINAL_H
 #define KTERM_TERMINAL_H
+
 #include <stddef.h>
 #include <string.h>
 #include <driver/keyboard.h>
 #include <util/list.h>
 #include <stdint.h>
+#include <string.h>
 
 const size_t TERMINAL_BUFFER_SIZE = 0x5000; //2K
 
@@ -65,6 +67,7 @@ namespace kterm {
         //Sends data to the terminal for output
         void putchar(char c);
         void puts(const char* str);
+        void puts(kstd::string str);
         //Asks the terminal to produce input
         bool hasInput();
         char getchar();

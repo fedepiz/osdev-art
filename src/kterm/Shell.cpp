@@ -86,8 +86,23 @@ namespace kterm {
         }
     }
 
+    void processEchoCommand(Shell *shell, const vector<string> &line) {
+        Terminal* term = shell->getTerminal();
+        if(line.size() == 1) {
+            term->puts("echo [anything]\n");
+            return;
+        }
+        string message = line.get(1);
+        //strip things away if is literal
+        if(message[0] == '"') {
+            message = message.substring(1, message.size() - 2);
+        }
+        term->puts(message);
+        term->puts("\n");
+    }
+
     void Shell::processCommand(const string &line) {
-        auto vec = line.split(' ');
+        auto vec = line.split(' ', false, '"', true);
         if(vec.size() == 0) {
             return;
         }
@@ -97,9 +112,11 @@ namespace kterm {
             this->quitSignal = true;
         } else if(commandName == string("debug")) {
            processDebugCommand(this, vec);
+        } else if (commandName == string("echo")) {
+            processEchoCommand(this, vec);
         }
         else {
-            string str = util::stringf("Unknown command \"%s\"\n", commandName.str());
+            string str = util::stringf("Unknown command %s\n", commandName.str());
             this->term->puts(str.str());
         }
     }

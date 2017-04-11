@@ -12,7 +12,7 @@ namespace kterm {
     using util::logf;
     using keyboard::key_info_t;
 
-    unsigned char kbdus[128] = {
+    unsigned char kbdus_lower[128] = {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
   '9', '0', '-', '=', '\b',	/* Backspace */
   '\t',			/* Tab */
@@ -23,6 +23,45 @@ namespace kterm {
  '\'', '`',   0,		/* Left shift */
  '\\', 'z', 'x', 'c', 'v', 'b', 'n',			/* 49 */
   'm', ',', '.', '/',   0,				/* Right shift */
+  '*',
+    0,	/* Alt */
+  ' ',	/* Space bar */
+    0,	/* Caps lock */
+    0,	/* 59 - F1 key ... > */
+    0,   0,   0,   0,   0,   0,   0,   0,
+    0,	/* < ... F10 */
+    0,	/* 69 - Num lock*/
+    0,	/* Scroll Lock */
+    0,	/* Home key */
+    0,	/* Up Arrow */
+    0,	/* Page Up */
+  '-',
+    0,	/* Left Arrow */
+    0,
+    0,	/* Right Arrow */
+  '+',
+    0,	/* 79 - End key*/
+    0,	/* Down Arrow */
+    0,	/* Page Down */
+    0,	/* Insert Key */
+    0,	/* Delete Key */
+    0,   0,   0,
+    0,	/* F11 Key */
+    0,	/* F12 Key */
+    0,	/* All other keys are undefined */
+};		
+//Uppercase version
+unsigned char kbdus_upper[128] = {
+    0,  27, '!', '@', '#', '$', '%', '^', '&', '*',	/* 9 */
+  '(', ')', '_', '+', '\b',	/* Backspace */
+  '\t',			/* Tab */
+  'Q', 'W', 'E', 'R',	/* 19 */
+  'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',	/* Enter key */
+    0,			/* 29   - Control */
+  'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':',	/* 39 */
+ '"', '~',   0,		/* Left shift */
+ '|', 'Z', 'X', 'C', 'V', 'B', 'N',			/* 49 */
+  'M', '<', '>', '?',   0,				/* Right shift */
   '*',
     0,	/* Alt */
   ' ',	/* Space bar */
@@ -131,6 +170,10 @@ namespace kterm {
             this->putchar(str[i]);
         }
     }
+
+    void Terminal::puts(string str) {
+        this->puts(str.str());
+    }
     
     void Terminal::flushOutBuffer() {
         while(!this->outBuffer.is_empty()) {
@@ -145,11 +188,13 @@ namespace kterm {
     
 
     char Terminal::keyToChar(key_info_t key_info) {
-        char ch = kbdus[key_info.keycode];
+        unsigned char* keymap;
         if(key_info.shift_down) {
-            if(kstd::isalpha(ch)) ch = kstd::toupper(ch);
-            if(kstd::issymbol(ch)) ch = ch + 16;
+            keymap = kbdus_upper;
+        } else {
+            keymap = kbdus_lower;
         }
+        char ch = keymap[key_info.keycode];
         return ch;
     }
 
