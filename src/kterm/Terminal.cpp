@@ -4,9 +4,11 @@
 #include <kernel/globals.h>
 #include <driver/vga_terminal.h>
 #include <driver/keyboard.h>
+#include <driver/serial.h>
 #include <util/text.h>
 #include <util/vector.h>
 #include <tasks/tasks.h>
+#include <stdarg.h>
 
 namespace kterm {
     using kstd::string;
@@ -113,12 +115,21 @@ unsigned char kbdus_upper[128] = {
         this->inputEcho = true;
         this->currentForegroundColor = defaultForegroundColor;
         this->currentBackgroundColor = defaultBackgroundColor;
+        this->outputDevice = TerminalOutputDevice::VGA;
     }
 
     Terminal::~Terminal() {
         if(inputMasterTerminal == this) {
             inputMasterTerminal = nullptr;
         }
+    }
+
+    TerminalOutputDevice Terminal::getOutputDevice() const {
+        return this->outputDevice;
+    }
+        
+    void Terminal::setOutputDevice(TerminalOutputDevice dev) {
+        this->outputDevice = dev;
     }
 
     void Terminal::setForegroundColor(VGAColor col) {
@@ -147,10 +158,17 @@ unsigned char kbdus_upper[128] = {
     }
 
     void Terminal::writechar(char c) {
-        auto fg_col = (vga_term::color)this->currentForegroundColor;
-        auto bg_col = (vga_term::color)this->currentBackgroundColor;
-        vga_term::set_color(fg_col, bg_col);
-        vga_term::putchar(c);
+        if(this->outputDevice == TerminalOutputDevice::VGA) {
+            auto fg_col = (vga_term::color)this->currentForegroundColor;
+            auto bg_col = (vga_term::color)this->currentBackgroundColor;
+            vga_term::set_color(fg_col, bg_col);
+            vga_term::putchar(c);
+        } else if (this->outputDevice == TerminalOutputDevice::SERIAL) {
+            char str[2];
+            str[0] = c;
+            str[1] = '\0';
+            serial::puts(str);
+        }
     }
 
     void Terminal::putchar(char c) {
@@ -165,10 +183,12 @@ unsigned char kbdus_upper[128] = {
         }
     }
 
-    void Terminal::puts(const char* str) {
-        for(size_t i = 0; i < kstd::strlen(str);i++) {
-            this->putchar(str[i]);
-        }
+    void Terminal::puts(const char* format, ...) {
+        va_list args;
+        va_start(args, format);
+        auto f = [&](char c) { this->putchar(c); };
+        util::implace_format(f, format, args);
+        va_end(args);
     }
 
     void Terminal::puts(string str) {
@@ -227,8 +247,8 @@ unsigned char kbdus_upper[128] = {
         //While not enter
         while(c != '\n') {
             //If key is backspace, go back in input if possible
-            if(c == '\b' && vec.size() > 0) {
-                vec.pop_back();
+            if(c == '\b') {
+                if(vec.size() > 0) vec.pop_back();
             } else {
                 vec.push_back(c);
             }

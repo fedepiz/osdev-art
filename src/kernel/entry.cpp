@@ -2,15 +2,14 @@
 #include <kterm/Shell.h>
 #include <util/text.h>
 #include <kernel/initialize.h>
+#include <tasks/tasks.h>
 
 using util::logf;
 
 
 void hang() {
 	logf("Hanging...\n");
-	for(;;) {
-
-	}
+	tasks::halt();
 }
 
 extern "C" void kernel_main(uint32_t ebx) {

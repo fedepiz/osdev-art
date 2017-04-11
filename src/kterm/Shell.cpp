@@ -133,8 +133,7 @@ namespace kterm {
     vfs::VFSNode* getFile(Terminal* term, const string& filename) {
         vfs::VFSNode* fileNode = vfs::getNode(filename);
         if(fileNode == nullptr) {
-            string message = util::stringf("Cannot find file %s\n", filename.str());
-            term->puts(message);
+            term->puts("Cannot find file %s\n", filename.str());
             return nullptr;
         }
         return fileNode;
@@ -179,6 +178,9 @@ namespace kterm {
 
         auto filename = line.get(1);
         vfs::VFSNode* fileNode = getFile(term, filename);
+        if(fileNode == nullptr) {
+            return;
+        }
         auto ops = fileNode->getDataOps();
         if(ops == nullptr || ops->getType() != vfs::DataOpsType::RANDOM_ACCESS) {
             term->puts("Can only dump random access files\n");
@@ -189,17 +191,18 @@ namespace kterm {
         unsigned char* buffer = new unsigned char[count];
         r_ops->read(0, buffer, count);
 
+        bool hasLog = false;
         if(line.size() > 2 && line.get(2) == string("-log")) {
-            for(unsigned int i = 0; i < count; i++) {
-                logf("%x ", buffer[i]);
-                if(i % 5 == 0) logf("\n");
-            }
-        } else { 
-            for(unsigned int i = 0; i < count; i++) {
-                string str = util::stringf("%x ", buffer[i]);
-                term->puts(str);
-                if(i % 5 == 0) term->putchar('\n');
-            }
+            hasLog = true;
+            term->setOutputDevice(TerminalOutputDevice::SERIAL);
+        }  
+        for(unsigned int i = 0; i < count; i++) {
+            term->puts("%x ", buffer[i]);
+            if(i % 5 == 0) term->putchar('\n');            
+        }
+        term->puts("\n");
+        if(hasLog){
+            term->setOutputDevice(TerminalOutputDevice::VGA);
         }
         delete[] buffer;
     }
@@ -253,12 +256,11 @@ namespace kterm {
                 return;
             }
         }
-        string str = util::stringf("Unknown command %s\n", commandName.str());
-        logf("Parsed unkown commmand %s\n", str.str());
-        //logf("Character breakdown:\n");
-        //for(unsigned int i = 0; i < commandName.size();i++) {
-        //    logf("Character %d: '%c'(%d)\n", i, commandName[i], commandName[i]);
-        //} 
-        this->term->puts(str.str());
+        logf("Parsed unkown commmand %s\n", commandName.str());
+        logf("Character breakdown:\n");
+        for(unsigned int i = 0; i < commandName.size();i++) {
+            logf("Character %d: '%c'(%d)\n", i, commandName[i], commandName[i]);
+        } 
+        this->term->puts("Unknown command %s\n", commandName.str());
     }
 };

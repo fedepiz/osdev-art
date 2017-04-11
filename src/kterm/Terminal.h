@@ -40,6 +40,11 @@ namespace kterm {
     const VGAColor defaultForegroundColor = VGAColor::WHITE;
     const VGAColor defaultBackgroundColor = VGAColor::BLACK;
 
+    enum TerminalOutputDevice {
+        VGA,
+        SERIAL
+    };
+
     class Terminal {
         private:
         list<char> outBuffer;
@@ -47,6 +52,7 @@ namespace kterm {
         TerminalMode mode;
         VGAColor currentForegroundColor;
         VGAColor currentBackgroundColor;
+        TerminalOutputDevice outputDevice;
         bool inputEcho;
         //Helpers
         //Draws the screen on the vga_terminal, starting with a given line offset
@@ -57,6 +63,9 @@ namespace kterm {
         public:
         Terminal();
         ~Terminal();
+        //Output device
+        TerminalOutputDevice getOutputDevice() const;
+        void setOutputDevice(TerminalOutputDevice dev);
         //Color set
         void setForegroundColor(VGAColor col);
         void setBackgroundColor(VGAColor col);
@@ -67,8 +76,8 @@ namespace kterm {
         TerminalMode getMode();
         //Sends data to the terminal for output
         void putchar(char c);
-        void puts(const char* str);
         void puts(kstd::string str);
+        void puts(const char* format, ...);
         //Asks the terminal to produce input
         bool hasInput();
         char getchar();

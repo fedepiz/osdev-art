@@ -83,7 +83,8 @@ namespace vfs {
             return nullptr;
         }
         if(chunks[0].size() != 0) {
-            logf("First file is not root!!\n");
+            logf("First file is not root - local paths not yet supported\n");
+            return nullptr;
         }
         return getNode(chunks, 0, getRoot());
     }
