@@ -6,6 +6,7 @@
 #include <kstdlib.h>
 #include <util/text.h>
 #include <filesystem/VFS.h>
+#include <filesystem/DataOps.h>
 #include <memory/debug.h>
 
 #include<tasks/tasks.h>
@@ -72,12 +73,16 @@ namespace kterm {
     void handleQuit(Shell* shell, const vector<string> &line);
     void handleDebug(Shell* shell, const vector<string> &line);
     void handleEcho(Shell *shell, const vector<string> &line);
+    void handleFileinfo(Shell *shell, const vector<string> &line);
+    void handleHexdump(Shell* shell, const vector<string> &line);
 
     shellCommand commandTable[] = {
         { "help" , "Usage: Help [commandName]", handleHelp},
         { "quit", "Exits kTerm", handleQuit },
         { "debug", "Prints debug information. Usage: debug [frames|pages|fs]", handleDebug },
         { "echo", "Parrots back something. Usage: echo [anything]", handleEcho },
+        { "fileinfo", "Displays file information. Usage: fileinfo [filename]", handleFileinfo }, 
+        { "hexdump", "Prints the file binary content. Usage: hexdump [filename]", handleHexdump },
         { nullptr, nullptr, nullptr }
     };
 
@@ -109,17 +114,94 @@ namespace kterm {
         }
     }
 
-    void printVFSNode(Terminal* term, vfs::VFSNode* node, int indent) {
+    static void printVFSNode(Terminal* term, vfs::VFSNode* node, int indent) {
         for(int i = 0; i < indent;i++) {
             term->putchar(' ');
         }
         term->puts(node->getName().str());
+        if(node->getChildren()->length() > 0) {
+            term->putchar('/');
+        }
         term->putchar('\n');
         indent++;
         for(unsigned int i = 0; i < node->getChildren()->length();i++) {
             vfs::VFSNode* child = node->getChildren()->get(i);
             printVFSNode(term, child, indent);
         }
+    }
+
+    vfs::VFSNode* getFile(Terminal* term, const string& filename) {
+        vfs::VFSNode* fileNode = vfs::getNode(filename);
+        if(fileNode == nullptr) {
+            string message = util::stringf("Cannot find file %s\n", filename.str());
+            term->puts(message);
+            return nullptr;
+        }
+        return fileNode;
+    }
+
+    void handleFileinfo(Shell *shell, const vector<string> &line) {
+        Terminal *term = shell->getTerminal();
+        if(line.size() <= 1) {
+            term->puts("Usage: fileinfo [filename]\n");
+            return;
+        }
+        vfs::VFSNode* fileNode = getFile(term, line.get(1));
+        if(fileNode == nullptr) {
+            return;
+        } else {
+            auto dataOps = fileNode->getDataOps();
+            if(dataOps == nullptr) {
+                term->puts("Type: Pure virtual file\n");
+            }
+            else {
+                switch(dataOps->getType()) {
+                    case vfs::DataOpsType::RANDOM_ACCESS:
+                        term->puts("Type: Random Access\n");
+                        break;
+                    case vfs::DataOpsType::OUTSTREAM:
+                        term->puts("Type: Output Stream\n");
+                        break;
+                    case vfs::DataOpsType::INSTREAM:
+                        term->puts("Type: Input Stream\n");
+                }
+            }
+            printVFSNode(term, fileNode, 0);
+        }
+    }
+
+    void handleHexdump(Shell* shell, const vector<string> &line) {
+        Terminal *term = shell->getTerminal();
+        if(line.size() <= 1) {
+            term->puts("Usage: hexdump [filename] {-log}\n");
+            return;
+        }
+
+        auto filename = line.get(1);
+        vfs::VFSNode* fileNode = getFile(term, filename);
+        auto ops = fileNode->getDataOps();
+        if(ops == nullptr || ops->getType() != vfs::DataOpsType::RANDOM_ACCESS) {
+            term->puts("Can only dump random access files\n");
+            return;
+        }
+        auto r_ops = (vfs::RandomAccessDataOps*)ops;
+        unsigned int count = r_ops->size();
+        unsigned char* buffer = new unsigned char[count];
+        r_ops->read(0, buffer, count);
+
+        if(line.size() > 2 && line.get(2) == string("-log")) {
+            for(unsigned int i = 0; i < count; i++) {
+                logf("%x ", buffer[i]);
+                if(i % 5 == 0) logf("\n");
+            }
+        } else { 
+            for(unsigned int i = 0; i < count; i++) {
+                string str = util::stringf("%x ", buffer[i]);
+                term->puts(str);
+                if(i % 5 == 0) term->putchar('\n');
+            }
+        }
+        delete[] buffer;
     }
 
     void handleDebug(Shell* shell, const vector<string> &line) {

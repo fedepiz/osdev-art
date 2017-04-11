@@ -48,6 +48,8 @@ i686-elf-g++ -c src/util/text.cpp -o build/util/text.o $CFLAGS $CWARNS
 i686-elf-g++ -c src/tasks/tasks.cpp -o build/tasks/tasks.o $CFLAGS $CWARNS
 
 i686-elf-g++ -c src/filesystem/VFS.cpp -o build/filesystem/VFS.o $CFLAGS $CWARNS
+i686-elf-g++ -c src/filesystem/DataOps.cpp -o build/filesystem/DataOps.o $CFLAGS $CWARNS
+
 
 i686-elf-g++ -c src/kterm/Shell.cpp -o build/kterm/Shell.o $CFLAGS $CWARNS
 i686-elf-g++ -c src/kterm/Terminal.cpp -o build/kterm/Terminal.o $CFLAGS $CWARNS
