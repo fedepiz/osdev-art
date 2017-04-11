@@ -111,6 +111,10 @@ namespace kterm {
         else {
             string str = util::stringf("Unknown command %s\n", commandName.str());
             logf("Parsed unkown commmand %s\n", str.str());
+            //logf("Character breakdown:\n");
+            //for(unsigned int i = 0; i < commandName.size();i++) {
+            //    logf("Character %d: '%c'(%d)\n", i, commandName[i], commandName[i]);
+            //} 
             this->term->puts(str.str());
         }
     }

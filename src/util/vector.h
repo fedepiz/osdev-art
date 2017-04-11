@@ -21,6 +21,7 @@ namespace util {
         vector(size_t capacity);
         ~vector();
         void push_back(const T& val);
+        void pop_back();
         const T* buffer() const;
         T& operator[](int index);
         T get(int index) const;
@@ -70,6 +71,13 @@ namespace util {
         }
         this->array[item_count] = val;
         item_count++;
+    }
+
+    template <class T> void vector<T>::pop_back() {
+        if(this->item_count == 0) {
+            panic("Popping back of empty vector");
+        }
+        item_count--;
     }
 
     template <class T> T vector<T>::get(int index) const {

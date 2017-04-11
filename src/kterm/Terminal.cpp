@@ -226,7 +226,12 @@ unsigned char kbdus_upper[128] = {
         char c = this->getchar();
         //While not enter
         while(c != '\n') {
-            vec.push_back(c);
+            //If key is backspace, go back in input if possible
+            if(c == '\b' && vec.size() > 0) {
+                vec.pop_back();
+            } else {
+                vec.push_back(c);
+            }
             c = this->getchar();
         }
         //char* c_str = util::vector_as_string(vec);
