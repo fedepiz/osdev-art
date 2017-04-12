@@ -27,7 +27,7 @@ void timer_handler(struct arch::regs *r) {
     //    secret++;
     //}
     if(timerCallback != nullptr) {
-        timerCallback(timer_ticks);
+        timerCallback(timer_ticks, r);
     }
 }
 

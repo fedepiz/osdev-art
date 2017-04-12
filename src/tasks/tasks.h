@@ -8,22 +8,21 @@
 namespace tasks {
     using util::list;
 
-    struct Registers {
-        uint32_t eax, ebx, ecx, edx, esi, edi, esp, ebp, eip, eflags;
-    };
-
     class Task {
         public:
-        Registers regs;
+        arch::regs regs;
         Task(void (*routine)(), unsigned int flags);
     };
 
     class TaskScheduler {
         private:
-        list<Task*> tasks;
+        list<Task*> taskQueue;
         Task* currentTask;
+        void rotateTasks();
         public:
         TaskScheduler();
+        void enqueueTask(Task* task);
+        void executeSwitch(arch::regs* stackRegs);
     };
 
     extern TaskScheduler* taskScheduler;
@@ -33,5 +32,7 @@ namespace tasks {
     extern "C" void halt();
     typedef void (*kernelTask_t)();
     void launchKernelTask(kernelTask_t task);
+    void initialize();
+    void test();
 };
 #endif

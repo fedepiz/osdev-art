@@ -12,6 +12,7 @@
 #include <filesystem/VFS.h>
 #include <util/vector.h>
 #include <util/text.h>
+#include <tasks/tasks.h>
 #include <string.h>
 using kstd::log;
 using kstd::itoa;
@@ -19,11 +20,9 @@ using kstd::string;
 using util::logf;
 
 
-void pit_test(uint32_t ticks) {
+void pit_test(uint32_t ticks, arch::regs* regs) {
 	(void)ticks;
-	//if(ticks % pit::DEFAULT_FREQUENCY_HZ == 0) {
-	//	kstd::puts("Heart is beating...\n");
-	//}
+	tasks::taskSwitchHandler(regs);
 }
 
 void initialize(uint32_t ebx) {
@@ -62,4 +61,6 @@ void initialize(uint32_t ebx) {
 	vfs::VFSNode* root = vfs::initialize();
 	vfs::mount_modules(root, mbinfo);
 	//util::logf("%s\n", vfs::root->getName());
+	tasks::initialize();
+	tasks::test();
 }
