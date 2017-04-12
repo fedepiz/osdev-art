@@ -8,6 +8,7 @@ SECTIONS {
    . = 0xC0100000;
    kernel_start = .;
    .text : AT(ADDR(.text) - 0xC0000000) {
+       *(.boot)
        *(.text)
        *(.rodata*)
    }

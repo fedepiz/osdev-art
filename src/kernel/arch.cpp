@@ -209,14 +209,36 @@ const char* exception_messages[] = {
 
 extern "C" uint32_t read_cr2();
 
+unsigned int tempESP;
+unsigned int globalTemp;
+
+void testME(int x, int y) {
+    __asm__ __volatile__("movl %0, %%esp" : 
+                                         : "r"(tempESP));
+    __asm__ __volatile__("movl %%esp, %0" : "=r"(globalTemp));
+    logf("Value of ESP in call is %x\n", globalTemp);
+    logf("x: %x, y:%x\n", &x, &y);
+    logf("Test me called with value %d\n",x);
+    for(;;) {
+
+    }
+}
+
+void die() {
+    logf("I am dead\n");
+}
+
 extern "C" void fault_handler(struct regs *r) {
     if(r->int_no == 14){
         uint32_t cr2 = read_cr2();
         logf("Page fault on reading linear address %x\n", cr2);
         for(;;){
         }
+    } 
+    else if(r->int_no == 18) {
+        logf("Called switching interrupt\n");
     }
-    if(r->int_no < 32) {
+    else if(r->int_no < 32) {
         logf("Exception, number %d, errcode %d\n", r->int_no, r->err_code);
     }
 }

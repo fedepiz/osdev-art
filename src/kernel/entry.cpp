@@ -14,8 +14,7 @@ void hang() {
 
 extern "C" void kernel_main(uint32_t ebx) {
 	initialize(ebx);
-	int* ptr = (int*)0;
-	*ptr = 2;
+	__asm__ __volatile__ ("int $18");
 	//kstd::kernel_heap.chatty_mode(true);
 	//Creates a terminal and makes it the main input controller	
 	logf("Initialization done\n");

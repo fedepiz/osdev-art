@@ -34,7 +34,7 @@ BootPageDirectory:
     times (1024 - KERNEL_PAGE_NUMBER - 1) dd 0  ; Pages after the kernel image.
  
  
-section .text
+section .boot
 align 4
 MultiBootHeader:
     dd MAGIC

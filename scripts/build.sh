@@ -11,8 +11,9 @@ mkdir -p build/tasks
 
 export CFLAGS="-std=c++11 -nostdlib -nostartfiles -ffreestanding -O2 -fno-exceptions -fno-rtti -Isrc -lgcc"
 export CWARNS="-Wall -Wextra"
-nasm -felf32 src/arch/boot.s -o build/arch/boot.o
-nasm -felf32 src/arch/helpers.s -o build/arch/helpers.o
+nasm -felf32 src/kernel/boot.s -o build/kernel/boot.o
+nasm -felf32 src/kernel/helpers.s -o build/kernel/helpers.o
+nasm -felf32 src/kernel/arch.s -o build/kernel/arch_asm.o
 
 i686-elf-g++ -c src/kernel/arch.cpp -o build/kernel/arch.o $CFLAGS $CWARNS
 i686-elf-g++ -c src/kernel/entry.cpp -o build/kernel/entry.o $CFLAGS $CWARNS
