@@ -41,7 +41,6 @@ i686-elf-g++ -c src/driver/keyboard.cpp -o build/driver/keyboard.o $CFLAGS $CWAR
 i686-elf-g++ -c src/driver/serial.cpp -o build/driver/serial.o $CFLAGS $CWARNS
 
 i686-elf-g++ -c src/util/heap_common.cpp -o build/util/heap_common.o $CFLAGS $CWARNS
-i686-elf-g++ -c src/util/StaticHeap.cpp -o build/util/StaticHeap.o $CFLAGS $CWARNS
 i686-elf-g++ -c src/util/DynamicHeap.cpp -o build/util/DynamicHeap.o $CFLAGS $CWARNS
 i686-elf-g++ -c src/util/text.cpp -o build/util/text.o $CFLAGS $CWARNS
 

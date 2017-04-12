@@ -20,6 +20,8 @@ extern "C" void kernel_end();
 const uint32_t KERNEL_VIRTUAL_BASE = 0xC0000000;
 size_t kernel_size();
 
+extern "C" unsigned int get_eflags();
+
 /* Defines a GDT entry. We say packed, because it prevents the
 *  compiler from doing things that it thinks is best: Prevent
 *  compiler "optimization" by packing */

@@ -23,6 +23,10 @@ namespace vfs {
         if(this->dataOps != nullptr) {
             delete this->dataOps;
         }
+        while(this->children.length() > 0) {
+            VFSNode* child = children.behead();
+            delete child;
+        }
     }
 
     string VFSNode::getName() const {

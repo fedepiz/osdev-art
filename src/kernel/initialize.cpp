@@ -3,7 +3,6 @@
 #include <kernel/arch.h>
 #include <kernel/globals.h>
 #include <kernel/multiboot.h>
-#include <util/StaticHeap.h>
 #include <memory/subsystem.h>
 #include <memory/paging.h>
 #include <driver/serial.h>

@@ -1,5 +1,7 @@
 #include <driver/pit.h>
 #include <kernel/arch.h>
+#include <tasks/tasks.h>
+#include <util/text.h>
 
 namespace pit {
 
@@ -19,6 +21,11 @@ uint32_t timer_ticks;
 void timer_handler(struct arch::regs *r) {
     (void)r;
     timer_ticks++;
+    //if(secret == 0) {
+    //    util::logf("Performing the dirty swap\n");
+    //    tasks::taskSwitchHandler(r);
+    //    secret++;
+    //}
     if(timerCallback != nullptr) {
         timerCallback(timer_ticks);
     }

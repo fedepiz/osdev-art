@@ -268,7 +268,14 @@ jump_to_address:
 	push eax
 	ret
 
-global halt:
+global halt
 halt:
 	hlt
+	ret
+
+global get_eflags
+get_eflags:
+	pushf
+	mov eax, [esp]
+	popf
 	ret
