@@ -90,8 +90,9 @@ namespace tasks {
     }
 
     void initialize() {
-        TaskScheduler* sched = new TaskScheduler();
-        currentTaskScheduler = sched;
+        //disalbe this stuff for now
+        //TaskScheduler* sched = new TaskScheduler();
+        //currentTaskScheduler = sched;
     }
 
     void func1() {
@@ -111,8 +112,8 @@ namespace tasks {
     }
 
     void test() {
-        Task* t1 = new Task(func1, arch::get_eflags());
-        currentTaskScheduler->enqueueTask(t1);
+        //Task* t1 = new Task(func1, arch::get_eflags());
+        //currentTaskScheduler->enqueueTask(t1);
         //Task* t2 = new Task(func2, arch::get_eflags());
         //currentTaskScheduler->enqueueTask(t2);
     }
