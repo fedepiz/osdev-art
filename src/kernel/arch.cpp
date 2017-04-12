@@ -214,11 +214,10 @@ extern "C" void fault_handler(struct regs *r) {
         uint32_t cr2 = read_cr2();
         logf("Page fault on reading linear address %x\n", cr2);
         for(;;){
-
         }
     }
     if(r->int_no < 32) {
-        kstd::puterr("Exception!!");
+        logf("Exception, number %d, errcode %d\n", r->int_no, r->err_code);
     }
 }
 

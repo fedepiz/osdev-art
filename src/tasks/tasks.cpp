@@ -107,7 +107,7 @@ namespace tasks {
         int x = 2;
         logf("Running func %d\n", x);
         for(;;) {
-
+            
         }
     }
 

@@ -97,6 +97,7 @@ global isr31
 %macro no_error_code_interrupt_handler 1
 isr%1:
 		cli
+		push byte 0
 		push byte %1        ; Note that we DON''T push a value on the stack in this one!
 		                   ; It pushes one already! Use this type of stub for exceptions
 		                   ; that pop error codes!
@@ -107,7 +108,7 @@ isr%1:
 %macro error_code_interrupt_handler 1
 isr%1:
 	cli
-	push byte 0
+	;push byte 0
 	push byte %1
 	jmp isr_common_stub
 %endmacro
