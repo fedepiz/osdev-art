@@ -172,9 +172,9 @@ isr_common_stub:
 	  pop fs
 	  pop es
 	  pop ds
-    popa
+      popa
 	  add esp, 8     ; Cleans up the pushed error code and pushed ISR number
-		iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP!
+	  iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP!
 
 ;IRQ stuff
 global irq0
